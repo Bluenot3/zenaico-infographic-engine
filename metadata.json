@@ -1,0 +1,6 @@
+{
+  "name": "ZEN Infographic Studio",
+  "description": "An AI-powered application to generate publication-ready infographics powered by OpenAI GPT-Image-2, DALL-E 3, and Google Gemini.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
