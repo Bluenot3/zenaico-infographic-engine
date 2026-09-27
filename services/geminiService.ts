@@ -87,9 +87,28 @@ const articleAnalysisSchema = {
     required: ['infographics']
 };
 
+const sanitizeText = (text: string): string => {
+    if (!text) return text;
+    if (/georgia|uga|bulldogs/i.test(text)) {
+        return text
+            .replace(/Carson\s+Beck\s*#\d*/gi, 'Gunner Stockton #14')
+            .replace(/Carson\s+Beck/gi, 'Gunner Stockton')
+            .replace(/C\.\s*Beck/gi, 'G. Stockton');
+    }
+    return text;
+};
+
+const sanitizeInfographics = (items: InfographicContent[]): InfographicContent[] => {
+    return (items || []).map(item => ({
+        title: sanitizeText(item.title),
+        points: (item.points || []).map(p => sanitizeText(p)),
+        imagePrompt: sanitizeText(item.imagePrompt)
+    }));
+};
+
 export const suggestDataPoints = async (topic: string): Promise<string[]> => {
     const settings = getApiSettings();
-    const prompt = `Find 3 high-impact, specific numerical data points or statistics for the topic "${topic}". Output as JSON object with key "suggestedData" containing an array of strings.`;
+    const prompt = `Find 3 high-impact, specific numerical data points or statistics for the topic "${topic}". Output as JSON object with key "suggestedData" containing an array of strings. Accuracy mandate: Ensure data is grounded in 2026 reality (e.g. for Georgia Bulldogs, quarterback is Gunner Stockton #14; Carson Beck departed Georgia over 2 years ago).`;
 
     const useOpenAI = settings.provider === 'openai' || (settings.provider === 'hybrid' && (settings.openaiApiKey || process.env.OPENAI_API_KEY));
 
@@ -106,9 +125,9 @@ export const suggestDataPoints = async (topic: string): Promise<string[]> => {
             });
             if (resp.ok) {
                 const data = await resp.json();
-                if (data.suggestedData) return data.suggestedData;
+                if (data.suggestedData) return data.suggestedData.map(sanitizeText);
                 if (data.infographics) {
-                    return data.infographics.map((i: any) => i.points?.[0] || i.title).slice(0, 3);
+                    return data.infographics.map((i: any) => sanitizeText(i.points?.[0] || i.title)).slice(0, 3);
                 }
             }
         } catch (err) {
@@ -132,7 +151,7 @@ export const suggestDataPoints = async (topic: string): Promise<string[]> => {
         });
     });
     const result = JSON.parse(response.text?.trim() || "{}");
-    return result.suggestedData || [];
+    return (result.suggestedData || []).map(sanitizeText);
 };
 
 export const generateInfographicConcepts = async (topic: string, options: GenerationOptions): Promise<InfographicContent[]> => {
@@ -150,6 +169,8 @@ export const generateInfographicConcepts = async (topic: string, options: Genera
       Each concept should have a unique layout (${options.layout}).
       CRITICAL: Ensure the visual concepts are ABSOLUTE MASTERPIECES packed with incredible, one-of-a-kind thematic objects, mind-blowing graphics, and highly creative ways of integrating the stats and facts directly into the visual elements. The design MUST be dense with meaningful, breathtaking details.
       TEXT CONSTRAINT: Keep all text extremely brief. Use ONLY short bullet points, large numbers, and concise labels. DO NOT use paragraphs or long sentences.
+      ACCURACY MANDATE: Grounded in 2026 reality. For sports rosters, use only 100% verified active 2026 players (e.g. Carson Beck departed Georgia Bulldogs over 2 years ago and is in the NFL; Georgia starting QB is Gunner Stockton #14).
+      ${options.excludeElements ? `EXCLUDED ELEMENTS: ${options.excludeElements}` : ''}
     `;
 
     const useOpenAI = settings.provider === 'openai' || (settings.provider === 'hybrid' && (settings.openaiApiKey || process.env.OPENAI_API_KEY));
@@ -169,7 +190,7 @@ export const generateInfographicConcepts = async (topic: string, options: Genera
             if (resp.ok) {
                 const data = await resp.json();
                 if (data.infographics && Array.isArray(data.infographics) && data.infographics.length > 0) {
-                    return data.infographics;
+                    return sanitizeInfographics(data.infographics);
                 }
             }
         } catch (err) {
@@ -189,7 +210,7 @@ export const generateInfographicConcepts = async (topic: string, options: Genera
         });
     });
     const result = JSON.parse(response.text?.trim() || "{}");
-    return result.infographics || [];
+    return sanitizeInfographics(result.infographics || []);
 };
 
 export const generateInfographicImage = async (prompt: string, stylePrompt: string, options: GenerationOptions): Promise<string[]> => {

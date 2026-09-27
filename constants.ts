@@ -2,6 +2,32 @@
 import type { StylePreset } from './types';
 
 export const STYLE_PRESETS: StylePreset[] = [
+  // --- SPORTS & GAMEDAY (Live Broadcast, Collegiate & Pro Athletics) ---
+  {
+    id: 'espn_broadcast_hud',
+    name: 'ESPN Primetime Sports HUD',
+    promptSuffix: 'official live sports broadcast package, ESPN NFL Sunday Night Football HUD style, dark carbon fiber and stadium turf background, dynamic illuminated scorebug telemetry, 3D broadcast motion graphics, high-contrast athletic sans-serif typography, stadium floodlights flare, metallic team accents, live ticker ribbon, sharp high-energy stat cards, 8k resolution, award-winning sports infographic.',
+    category: 'Sports & Gameday'
+  },
+  {
+    id: 'fsu_garnet_gold',
+    name: 'Florida State Seminoles Gameday',
+    promptSuffix: 'Florida State Seminoles official athletic branding, deep regal garnet and vibrant metallic gold accents, collegiate spear and feather motifs, Doak Campbell Stadium night lights atmosphere, bold collegiate block typography, aggressive gridiron breakdown, championship pedigree, high-gloss stats charts, dramatic smoke and floodlight backlight, cinematic 8k college football visual.',
+    category: 'Sports & Gameday'
+  },
+  {
+    id: 'championship_gold',
+    name: 'NFL Championship & Super Bowl',
+    promptSuffix: 'Super Bowl championship presentation, Vince Lombardi polished silver and 24k gold leaf finish, stadium turf texture, dynamic split-screen player stat cards, high-impact athletic typography, official league broadcast telemetry, dramatic stadium pyro and laser graphics, pristine executive sports visual.',
+    category: 'Sports & Gameday'
+  },
+  {
+    id: 'court_vision_nba',
+    name: 'Court Vision Analytics',
+    promptSuffix: 'modern NBA analytics dashboard, hardwood basketball court floor texture with neon cyan and orange shot-chart heatmaps, player efficiency rating telemetry, sleek dark mode glass cards, sharp athletic typography, fast-break motion trails, crisp vector diagrams.',
+    category: 'Sports & Gameday'
+  },
+
   // --- MASTERPIECE COLLECTION (High-End/Ultra-Technical) ---
   { 
     id: 'luxury_deco', 
@@ -14,6 +40,24 @@ export const STYLE_PRESETS: StylePreset[] = [
     name: 'Nexus HUD (Ultra-Technical)', 
     promptSuffix: 'futuristic FUI interface, dark slate gray background, glowing neon teal and orange data lines, iron man hud style, technical schematics, cybernetic aesthetics, data visualization, clean sans-serif typography, 8k resolution, screen graphics, complex data modules.', 
     category: 'Masterpiece' 
+  },
+  {
+    id: 'bloomberg_terminal_pro',
+    name: 'Bloomberg Terminal Pro',
+    promptSuffix: 'professional financial terminal interface, ultra-dense Bloomberg & FactSet analytics, dark obsidian background with amber and phosphor orange data readouts, candlestick telemetry, financial heatmaps, crisp monospace typography, institutional Wall Street intelligence.',
+    category: 'Masterpiece'
+  },
+  {
+    id: 'cyberpunk_neo_tokyo',
+    name: 'Cyberpunk Neo-Tokyo 2099',
+    promptSuffix: 'volumetric holographic HUD projected over rain-slicked midnight Tokyo asphalt, glowing cyan and hot magenta neon vector lines, Japanese kanji micro-accents, circuit trace glyphs, hyper-detailed data matrices, raytraced wet reflections, cinematic sci-fi masterpiece.',
+    category: 'Masterpiece'
+  },
+  {
+    id: 'claymorphic_spatial_3d',
+    name: '3D Spatial Claymorphism',
+    promptSuffix: 'hyper-tactile 3D claymorphic render, soft matte clay shapes, pastel mint and warm lavender tones, floating translucent frosted glass pills, Apple Vision Pro spatial UI aesthetic, gentle diffused studio shadows, playful rounded typography, tactile cheerful masterpiece.',
+    category: 'Masterpiece'
   },
   { 
     id: 'cognitive_3d', 
@@ -32,6 +76,24 @@ export const STYLE_PRESETS: StylePreset[] = [
     name: 'Glassmorphism 2.0', 
     promptSuffix: 'frosted glass UI elements, blurred background transparency, vibrant gradients, soft shadows, modern iOS aesthetic, clean white text, floating cards, premium app interface design.', 
     category: 'Masterpiece' 
+  },
+  {
+    id: 'davinci_codex',
+    name: 'Leonardo Da Vinci Codex',
+    promptSuffix: 'Renaissance master inventor notebook, antique aged sepia parchment texture, intricate hand-inked crosshatching diagrams, mirror-written Latin calligraphy, anatomical and mechanical gear schematics, vitruvian proportions, museum archive parchment.',
+    category: 'Masterpiece'
+  },
+  {
+    id: 'solarpunk_utopia',
+    name: 'Solarpunk Biophilic Eco-City',
+    promptSuffix: 'solarpunk aesthetic, lush vertical gardens intertwined with curving white architectural glass, iridescent solar cell patterns, clean crisp Scandinavian layout, emerald green and sunlit gold palette, optimistic sustainability blueprints.',
+    category: 'Masterpiece'
+  },
+  {
+    id: 'architectural_brutalism',
+    name: 'Architectural Brutalism',
+    promptSuffix: 'monolithic brutalist architecture aesthetic, exposed raw board-formed concrete background, stark Swiss International typography in safety orange and charcoal, structural isometric floorplans, heavy bold rules and modernist grid discipline.',
+    category: 'Masterpiece'
   },
 
   // --- PROFESSIONAL / CORPORATE ---

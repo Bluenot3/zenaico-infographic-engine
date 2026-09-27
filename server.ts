@@ -4,6 +4,7 @@ import puppeteer from "puppeteer";
 import path from "path";
 import cors from "cors";
 import OpenAI from "openai";
+import { SportsEngine } from "./services/sportsEngine";
 
 async function startServer() {
   const app = express();
@@ -44,8 +45,26 @@ async function startServer() {
           n: 1,
           size: modelToUse === "dall-e-2" ? "1024x1024" : size,
         };
+
+        // Enforce highest fidelity generation
+        if (modelToUse === "dall-e-3") {
+          payload.quality = "hd";
+        } else if (modelToUse === "gpt-image-2") {
+          payload.quality = "high";
+        }
         
-        const response = await openai.images.generate(payload);
+        let response;
+        try {
+          response = await openai.images.generate(payload);
+        } catch (qualErr: any) {
+          // If quality parameter not accepted, retry with default quality
+          if (payload.quality) {
+            delete payload.quality;
+            response = await openai.images.generate(payload);
+          } else {
+            throw qualErr;
+          }
+        }
 
         const b64 = response.data[0]?.b64_json;
         const url = response.data[0]?.url;
@@ -66,8 +85,15 @@ async function startServer() {
             prompt: prompt.slice(0, 4000),
             n: 1,
             size,
+            quality: "hd"
           };
-          const fallbackResp = await openai.images.generate(fallbackPayload);
+          let fallbackResp;
+          try {
+            fallbackResp = await openai.images.generate(fallbackPayload);
+          } catch {
+            delete fallbackPayload.quality;
+            fallbackResp = await openai.images.generate(fallbackPayload);
+          }
           
           const fallbackB64 = fallbackResp.data[0]?.b64_json;
           const fallbackUrl = fallbackResp.data[0]?.url;
@@ -151,6 +177,57 @@ Generate exactly 4 unique infographic concepts.`
     } catch (error: any) {
       console.error("OpenAI Chat Error:", error);
       res.status(500).json({ error: error.message || "Chat failed" });
+    }
+  });
+
+  // Sports Live Data & Google Search Grounding endpoints
+  app.get("/api/sports/feed", async (req, res) => {
+    try {
+      const sport = (req.query.sport as any) || 'all';
+      const query = (req.query.q as string) || '';
+      const forceRefresh = req.query.refresh === 'true';
+      const result = await SportsEngine.getSportsFeed({ sport, query, forceRefresh });
+      res.json(result);
+    } catch (error: any) {
+      console.error("Sports feed error:", error);
+      res.status(500).json({ error: error.message || "Failed to fetch sports feed" });
+    }
+  });
+
+  app.post("/api/sports/feed", async (req, res) => {
+    try {
+      const { sport = 'all', query = '', forceRefresh = false } = req.body;
+      const result = await SportsEngine.getSportsFeed({ sport, query, forceRefresh });
+      res.json(result);
+    } catch (error: any) {
+      console.error("Sports feed error:", error);
+      res.status(500).json({ error: error.message || "Failed to fetch sports feed" });
+    }
+  });
+
+  app.post("/api/sports/synthesize-plan", async (req, res) => {
+    try {
+      const { game, styleName, stylePrompt, aspectRatio, layout, customAngle, count = 1 } = req.body;
+      if (!game) {
+        return res.status(400).json({ error: "Game data is required to synthesize infographic" });
+      }
+      const plansCount = Math.min(Math.max(Number(count) || 1, 1), 4);
+      const plans = await SportsEngine.synthesizeInfographicPlans({
+        game,
+        styleName,
+        stylePrompt,
+        aspectRatio,
+        layout,
+        customAngle,
+        count: plansCount
+      });
+      res.json({
+        plans,
+        ...(plans[0] || {})
+      });
+    } catch (error: any) {
+      console.error("Sports synthesis error:", error);
+      res.status(500).json({ error: error.message || "Failed to synthesize sports infographic" });
     }
   });
 

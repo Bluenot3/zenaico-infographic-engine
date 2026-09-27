@@ -1,13 +1,15 @@
 
-import React, { useState, useMemo, useRef } from 'react';
+import React, { useState, useEffect, useMemo, useRef } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import { toast } from 'sonner';
 import { STYLE_PRESETS } from '../constants';
 import * as aiService from '../services/geminiService';
-import type { InfographicContent, StylePreset, GeneratedImage, GenerationOptions } from '../types';
+import type { InfographicContent, StylePreset, GeneratedImage, GenerationOptions, HistoryItem } from '../types';
+import { historyService } from '../services/historyService';
 import { Icon } from './common/Icon';
 import { Spinner } from './common/Spinner';
 import { ImageWithActions } from './ImageWithActions';
+import { ZenLogo } from './common/ZenLogo';
 import { cn } from '../lib/utils';
 
 const ImageModal: React.FC<{ src: string | null; onClose: () => void }> = ({ src, onClose }) => {
@@ -56,9 +58,17 @@ const OptionButton: React.FC<{ label: string, value: any, selectedValue: any, on
 
 interface InfographicGeneratorProps {
     onOpenSettings?: () => void;
+    loadedHistoryItem?: HistoryItem | null;
+    onViewHistory?: () => void;
+    onViewSports?: () => void;
 }
 
-export const InfographicGenerator: React.FC<InfographicGeneratorProps> = ({ onOpenSettings }) => {
+export const InfographicGenerator: React.FC<InfographicGeneratorProps> = ({ 
+    onOpenSettings,
+    loadedHistoryItem,
+    onViewHistory,
+    onViewSports
+}) => {
     const [inputMode, setInputMode] = useState<'topic' | 'url' | 'article' | 'file' | 'app-screenshot'>('topic');
     const [sourceInput, setSourceInput] = useState('');
     const [selectedFile, setSelectedFile] = useState<File | null>(null);
@@ -67,6 +77,7 @@ export const InfographicGenerator: React.FC<InfographicGeneratorProps> = ({ onOp
     const fileInputRef = useRef<HTMLInputElement>(null);
 
     const [selectedStyles, setSelectedStyles] = useState<StylePreset[]>([STYLE_PRESETS[0]]);
+    const [numVariations, setNumVariations] = useState<number>(4);
     const [isLoading, setIsLoading] = useState(false);
     const [contents, setContents] = useState<InfographicContent[]>([]);
     const [generatedImages, setGeneratedImages] = useState<GeneratedImage[][]>([]);
@@ -97,6 +108,34 @@ export const InfographicGenerator: React.FC<InfographicGeneratorProps> = ({ onOp
         lighting: 'cinematic',
         renderEngine: 'unreal-engine-5',
     });
+
+    // Populate from loaded history item when user clicks 'Refine in Studio'
+    useEffect(() => {
+        if (loadedHistoryItem) {
+            setSourceInput(loadedHistoryItem.topic || loadedHistoryItem.title);
+            setInputMode('topic');
+            setContents([{
+                title: loadedHistoryItem.title,
+                points: loadedHistoryItem.points || [],
+                imagePrompt: loadedHistoryItem.topic || loadedHistoryItem.title
+            }]);
+            setGeneratedImages([[{
+                id: 1,
+                url: loadedHistoryItem.imageUrl,
+                isAnalyzing: false,
+                flawSuggestions: [],
+                isDetectingText: false,
+                detectedText: []
+            }]]);
+            if (loadedHistoryItem.aspectRatio) {
+                setAdvancedOptions(prev => ({
+                    ...prev,
+                    aspectRatio: loadedHistoryItem.aspectRatio as any,
+                    layout: (loadedHistoryItem.layout as any) || prev.layout,
+                }));
+            }
+        }
+    }, [loadedHistoryItem]);
 
     const categories = useMemo(() => {
         const cats = Array.from(new Set(STYLE_PRESETS.map(s => s.category)));
@@ -169,6 +208,23 @@ export const InfographicGenerator: React.FC<InfographicGeneratorProps> = ({ onOp
             });
 
             toast.success("Variant regenerated!", { id: `regen-${variantIndex}` });
+
+            // Auto-archive regenerated visual
+            imagesForPlan.forEach(img => {
+                historyService.saveItem({
+                    title: plan.title,
+                    topic: sourceInput || plan.title,
+                    points: plan.points || [],
+                    imageUrl: img.url,
+                    aspectRatio: advancedOptions.aspectRatio,
+                    model: 'gpt-image-2',
+                    styleName: selectedStyles[0]?.name,
+                    category: selectedStyles[0]?.category,
+                    layout: advancedOptions.layout,
+                    dataEntries: advancedOptions.dataEntries,
+                    engraved: true,
+                }).catch(e => console.warn('Failed to archive regenerated infographic', e));
+            });
 
             // Re-run analysis
             imagesForPlan.forEach(img => {
@@ -268,15 +324,16 @@ export const InfographicGenerator: React.FC<InfographicGeneratorProps> = ({ onOp
                 conceptPlans = await aiService.generateInfographicConcepts(sourceInput, options);
             }
             
-            setContents(conceptPlans);
-            setGeneratedImages(conceptPlans.map(() => []));
-            toast.success("Concepts generated. Now rendering visuals...", { id: mainToast });
+            const plansToRender = conceptPlans.slice(0, numVariations);
+            setContents(plansToRender);
+            setGeneratedImages(plansToRender.map(() => []));
+            toast.success(`Generated ${plansToRender.length} concepts. Now rendering visuals...`, { id: mainToast });
 
             const stylePrompt = selectedStyles.map(s => s.promptSuffix).join(' ');
 
             // Process each variant
-            for (let i = 0; i < conceptPlans.length; i++) {
-                const plan = conceptPlans[i];
+            for (let i = 0; i < plansToRender.length; i++) {
+                const plan = plansToRender[i];
                 try {
                     const urls = await aiService.generateInfographicImage(plan.imagePrompt, stylePrompt, options);
                     const imagesForPlan: GeneratedImage[] = urls.map((url, j) => ({
@@ -287,6 +344,23 @@ export const InfographicGenerator: React.FC<InfographicGeneratorProps> = ({ onOp
                         const next = [...prev];
                         next[i] = imagesForPlan;
                         return next;
+                    });
+
+                    // Auto-archive newly synthesized visual into ZEN Certified Archive
+                    imagesForPlan.forEach(img => {
+                        historyService.saveItem({
+                            title: plan.title,
+                            topic: sourceInput || plan.title,
+                            points: plan.points || [],
+                            imageUrl: img.url,
+                            aspectRatio: options.aspectRatio,
+                            model: 'gpt-image-2',
+                            styleName: selectedStyles[0]?.name,
+                            category: selectedStyles[0]?.category,
+                            layout: options.layout,
+                            dataEntries: options.dataEntries,
+                            engraved: true,
+                        }).catch(e => console.warn('Failed to archive infographic', e));
                     });
 
                     // Trigger non-blocking enrichment
@@ -368,21 +442,35 @@ export const InfographicGenerator: React.FC<InfographicGeneratorProps> = ({ onOp
                 animate={{ opacity: 1, y: 0 }}
                 className="glass-panel p-8 md:p-12 rounded-[3rem] space-y-12 border-white/5 shadow-[0_50px_100px_rgba(0,0,0,0.3)]"
             >
-                <div className="flex flex-wrap gap-3">
-                    {['topic', 'url', 'article', 'file', 'app-screenshot'].map((m: any) => (
-                        <button 
-                            key={m} 
-                            onClick={() => setInputMode(m)} 
-                            className={cn(
-                                "px-8 py-4 rounded-2xl capitalize font-black transition-all tracking-wider",
-                                inputMode === m 
-                                    ? "bg-blue-600 text-white shadow-xl shadow-blue-600/30 scale-105" 
-                                    : "bg-slate-900/40 text-slate-400 hover:bg-slate-800/60"
-                            )}
+                <div className="flex flex-wrap gap-3 items-center justify-between">
+                    <div className="flex flex-wrap gap-3">
+                        {['topic', 'url', 'article', 'file', 'app-screenshot'].map((m: any) => (
+                            <button 
+                                key={m} 
+                                onClick={() => setInputMode(m)} 
+                                className={cn(
+                                    "px-8 py-4 rounded-2xl capitalize font-black transition-all tracking-wider",
+                                    inputMode === m 
+                                        ? "bg-blue-600 text-white shadow-xl shadow-blue-600/30 scale-105" 
+                                        : "bg-slate-900/40 text-slate-400 hover:bg-slate-800/60"
+                                )}
+                            >
+                                {m === 'app-screenshot' ? 'App Campaign' : m}
+                            </button>
+                        ))}
+                    </div>
+
+                    {onViewSports && (
+                        <button
+                            type="button"
+                            onClick={onViewSports}
+                            className="px-6 py-4 rounded-2xl font-black transition-all tracking-wider bg-gradient-to-r from-red-600/30 via-[#782F40]/40 to-amber-600/30 hover:from-red-600/50 hover:to-amber-600/50 text-white border border-amber-500/30 shadow-lg flex items-center gap-2 active:scale-95"
                         >
-                            {m === 'app-screenshot' ? 'App Campaign' : m}
+                            <span className="w-2 h-2 rounded-full bg-red-500 animate-ping" />
+                            <Icon name="trophy" className="h-4 w-4 text-amber-400" />
+                            <span>⚡ Live Sports Gameday Hub (Google Grounded)</span>
                         </button>
-                    ))}
+                    )}
                 </div>
 
                 <div className="relative">
@@ -632,15 +720,41 @@ export const InfographicGenerator: React.FC<InfographicGeneratorProps> = ({ onOp
             </motion.div>
 
             {/* Action Zone */}
-            <div className="text-center">
-                <button 
-                    onClick={handleGenerate} 
-                    disabled={isLoading || !sourceInput}
-                    className="group relative inline-flex items-center justify-center px-32 py-10 font-black text-3xl text-white bg-blue-600 rounded-full hover:scale-105 active:scale-95 transition-all shadow-[0_30px_80px_-20px_rgba(37,99,235,0.6)] disabled:opacity-50 disabled:cursor-not-allowed overflow-hidden"
-                >
-                    <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/10 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-1000" />
-                    {isLoading ? <Spinner /> : <><Icon name="magic" className="mr-6 h-8 w-8" /> {inputMode === 'app-screenshot' ? 'GENERATE CAMPAIGN' : 'GENERATE 4 VARIANTS'}</>}
-                </button>
+            <div className="text-center space-y-6">
+                {inputMode !== 'app-screenshot' && (
+                    <div className="inline-flex items-center gap-3 bg-slate-900/60 p-2 rounded-2xl border border-white/10 backdrop-blur-md">
+                        <span className="text-xs font-black uppercase tracking-wider text-slate-400 pl-3">
+                            Variations to Generate:
+                        </span>
+                        <div className="flex gap-1.5">
+                            {[1, 2, 3, 4].map(num => (
+                                <button
+                                    key={num}
+                                    onClick={() => setNumVariations(num)}
+                                    className={cn(
+                                        "w-10 h-10 rounded-xl font-black text-sm transition-all",
+                                        numVariations === num
+                                            ? "bg-blue-600 text-white shadow-lg shadow-blue-600/30 scale-105"
+                                            : "bg-white/5 hover:bg-white/10 text-slate-400"
+                                    )}
+                                >
+                                    {num}
+                                </button>
+                            ))}
+                        </div>
+                    </div>
+                )}
+
+                <div>
+                    <button 
+                        onClick={handleGenerate} 
+                        disabled={isLoading || !sourceInput}
+                        className="group relative inline-flex items-center justify-center px-24 sm:px-32 py-8 sm:py-10 font-black text-2xl sm:text-3xl text-white bg-blue-600 rounded-full hover:scale-105 active:scale-95 transition-all shadow-[0_30px_80px_-20px_rgba(37,99,235,0.6)] disabled:opacity-50 disabled:cursor-not-allowed overflow-hidden"
+                    >
+                        <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/10 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-1000" />
+                        {isLoading ? <Spinner /> : <><Icon name="magic" className="mr-6 h-8 w-8" /> {inputMode === 'app-screenshot' ? 'GENERATE CAMPAIGN' : `GENERATE ${numVariations} VARIANT${numVariations > 1 ? 'S' : ''}`}</>}
+                    </button>
+                </div>
             </div>
 
             {/* Render Quad-Grid */}

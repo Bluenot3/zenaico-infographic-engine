@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { motion } from 'motion/react';
 import type { ApiSettings, ApiProvider, ImageModelOption, TextModelOption } from '../types';
 import { Icon } from './common/Icon';
+import { ZenLogo } from './common/ZenLogo';
 
 interface SettingsPanelProps {
   isOpen: boolean;
@@ -33,10 +34,42 @@ const ProviderButton: React.FC<{
 export const SettingsPanel: React.FC<SettingsPanelProps> = ({ isOpen, onClose, currentSettings, onSave }) => {
   const [settings, setSettings] = useState<ApiSettings>(currentSettings);
   const [showOpenAiKey, setShowOpenAiKey] = useState(false);
+  const [customLogoUrl, setCustomLogoUrl] = useState<string>('');
 
   useEffect(() => {
     setSettings(currentSettings);
+    try {
+      const stored = localStorage.getItem('zen_custom_brand_logo') || '';
+      setCustomLogoUrl(stored);
+    } catch {}
   }, [currentSettings, isOpen]);
+
+  const handleLogoUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = (event) => {
+      const result = event.target?.result as string;
+      if (result) {
+        setCustomLogoUrl(result);
+        try {
+          localStorage.setItem('zen_custom_brand_logo', result);
+          window.dispatchEvent(new Event('zen-logo-updated'));
+        } catch (err) {
+          console.error('Failed to store custom logo:', err);
+        }
+      }
+    };
+    reader.readAsDataURL(file);
+  };
+
+  const handleResetLogo = () => {
+    setCustomLogoUrl('');
+    try {
+      localStorage.removeItem('zen_custom_brand_logo');
+      window.dispatchEvent(new Event('zen-logo-updated'));
+    } catch {}
+  };
 
   const handleSave = () => {
     onSave(settings);
@@ -215,6 +248,77 @@ export const SettingsPanel: React.FC<SettingsPanelProps> = ({ isOpen, onClose, c
                 >
                     o3-mini
                 </button>
+            </div>
+        </div>
+
+        {/* Official Brand Identity & Custom Logo Section */}
+        <div className="space-y-4 bg-slate-950/60 p-5 rounded-3xl border border-blue-500/20">
+            <div className="flex items-center justify-between">
+                <div className="flex items-center gap-2">
+                    <div className="p-2 bg-blue-500/20 text-blue-400 rounded-xl">
+                        <Icon name="sparkles" className="h-4 w-4" />
+                    </div>
+                    <div>
+                        <h4 className="text-sm font-bold text-white">Official Brand Emblem & Logo</h4>
+                        <p className="text-[11px] text-slate-400">Customizes studio branding, header emblem, and infographic engravings.</p>
+                    </div>
+                </div>
+                <span className="text-[10px] font-black uppercase tracking-wider text-blue-400 bg-blue-500/10 px-2.5 py-1 rounded-full border border-blue-500/20">
+                    {customLogoUrl ? 'Custom Active' : 'Official ZEN'}
+                </span>
+            </div>
+
+            {/* Logo Preview & Verification Card */}
+            <div className="flex flex-col sm:flex-row items-center justify-between gap-4 p-4 rounded-2xl bg-black/60 border border-white/10">
+                <div className="flex items-center gap-4">
+                    <ZenLogo size={56} engraved glow customLogoUrl={customLogoUrl} />
+                    <div className="flex flex-col">
+                        <span className="text-sm font-black text-white tracking-wide">
+                            {customLogoUrl ? 'Custom Organization Logo' : 'Official ZEN AI Co. Emblem'}
+                        </span>
+                        <span className="text-[11px] text-slate-400 font-mono">
+                            {customLogoUrl ? 'User Asset Loaded' : '1024x1024 Master Asset · zen-brand-logo.png'}
+                        </span>
+                        <span className="text-[10px] text-emerald-400 font-semibold mt-0.5">
+                            ✓ Engraved on Infographics & Downloads
+                        </span>
+                    </div>
+                </div>
+
+                <div className="flex items-center gap-2 w-full sm:w-auto">
+                    <label className="flex-1 sm:flex-none text-center px-3.5 py-2 rounded-xl text-xs font-bold bg-blue-600/20 text-blue-300 hover:bg-blue-600/30 border border-blue-500/30 cursor-pointer transition-all active:scale-95">
+                        <span>Upload Logo</span>
+                        <input type="file" accept="image/*" onChange={handleLogoUpload} className="hidden" />
+                    </label>
+
+                    {customLogoUrl && (
+                        <button 
+                            type="button"
+                            onClick={handleResetLogo}
+                            className="px-3 py-2 rounded-xl text-xs font-bold bg-rose-500/20 text-rose-300 hover:bg-rose-500/30 border border-rose-500/30 transition-all active:scale-95"
+                            title="Reset to official ZEN logo"
+                        >
+                            Reset
+                        </button>
+                    )}
+
+                    <a 
+                        href="/zen-brand-logo.png" 
+                        download="zen-brand-logo.png"
+                        className="px-3 py-2 rounded-xl text-xs font-bold bg-white/10 text-slate-300 hover:text-white hover:bg-white/15 border border-white/10 transition-all active:scale-95"
+                        title="Download official PNG logo"
+                    >
+                        PNG
+                    </a>
+                    <a 
+                        href="/zen-logo.svg" 
+                        download="zen-logo.svg"
+                        className="px-3 py-2 rounded-xl text-xs font-bold bg-white/10 text-slate-300 hover:text-white hover:bg-white/15 border border-white/10 transition-all active:scale-95"
+                        title="Download official SVG vector"
+                    >
+                        SVG
+                    </a>
+                </div>
             </div>
         </div>
 

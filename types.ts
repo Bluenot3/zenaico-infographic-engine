@@ -46,6 +46,23 @@ export interface DetectedText {
   boundingBox: BoundingBox;
 }
 
+export interface HistoryItem {
+  id: string;
+  timestamp: number;
+  title: string;
+  topic: string;
+  points: string[];
+  imageUrl: string;
+  aspectRatio: string;
+  model: string;
+  styleName?: string;
+  category?: string;
+  layout?: string;
+  sourceType?: string;
+  dataEntries?: string[];
+  engraved?: boolean;
+}
+
 export interface GeneratedImage {
   id: number;
   url: string;
@@ -87,6 +104,58 @@ export interface GenerationOptions {
   // Upscaled Controls
   lighting?: 'studio' | 'cinematic' | 'natural' | 'neon-cyberpunk' | 'golden-hour';
   renderEngine?: 'unreal-engine-5' | 'octane-render' | 'v-ray' | 'digital-painting' | 'vector-art';
+}
+
+export interface SportsTeam {
+  name: string;
+  shortName: string;
+  rank?: number;
+  record?: string;
+  color?: string;
+  logoText?: string;
+  uniformBrand?: string;
+  uniformStyle?: string;
+}
+
+export interface SportsGame {
+  id: string;
+  sport: 'CFB' | 'NFL' | 'OTHER';
+  league: string;
+  homeTeam: SportsTeam;
+  awayTeam: SportsTeam;
+  score?: { home: number; away: number };
+  status: 'FINAL' | 'LIVE' | 'UPCOMING';
+  gameDate: string;
+  quarterOrTime: string;
+  headline: string;
+  summary: string;
+  venue?: string;
+  stadiumName?: string;
+  stadiumLocation?: string;
+  broadcast?: string;
+  keyStats: { label: string; value: string }[];
+  isFloridaState?: boolean;
+  isFeatured?: boolean;
+  turningPoint?: string;
+  webImageReferences?: string[];
+  boxScore?: {
+    q1?: { home: number; away: number };
+    q2?: { home: number; away: number };
+    q3?: { home: number; away: number };
+    q4?: { home: number; away: number };
+    totalYards?: { home: string; away: string };
+    passYards?: { home: string; away: string };
+    rushYards?: { home: string; away: string };
+    turnovers?: { home: number; away: number };
+    topPerformers?: string[];
+  };
+}
+
+export interface SportsFeedResponse {
+  games: SportsGame[];
+  source: string;
+  lastUpdated: string;
+  headline: string;
 }
 
 declare global {

@@ -6,6 +6,8 @@ import { Icon } from './common/Icon';
 import type { GeneratedImage, DetectedText, BoundingBox } from '../types';
 import { Spinner } from './common/Spinner';
 import { ImageEditor } from './ImageEditor';
+import { ZenLogo } from './common/ZenLogo';
+import { downloadInfographicImage } from '../lib/engraveImage';
 import { cn } from '../lib/utils';
 
 interface ImageWithActionsProps {
@@ -27,6 +29,7 @@ export const ImageWithActions: React.FC<ImageWithActionsProps> = ({
   const [showDataCard, setShowDataCard] = useState(false);
   const [dataRefinePrompt, setDataRefinePrompt] = useState('');
   const [copySuccess, setCopySuccess] = useState(false);
+  const [showMobileActions, setShowMobileActions] = useState(false);
   
   const [localTexts, setLocalTexts] = useState<DetectedText[]>([]);
   const [isProcessing, setIsProcessing] = useState(false);
@@ -36,14 +39,23 @@ export const ImageWithActions: React.FC<ImageWithActionsProps> = ({
     if (image.detectedText) setLocalTexts(image.detectedText);
   }, [image.detectedText, image.url]);
 
-  const handleDownload = () => {
-    const link = document.createElement('a');
-    link.href = image.url;
-    link.download = `zen_infographic_${Date.now()}.jpg`;
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
-    toast.success("Downloading high-resolution visual...");
+  const handleDownload = async (engrave: boolean = true) => {
+    setIsProcessing(true);
+    const toastId = toast.loading(engrave ? "Applying ZEN AI Co. engraved hallmark..." : "Downloading visual...");
+    try {
+      const filename = `zen_infographic_${Date.now()}_${engrave ? 'engraved' : 'raw'}.png`;
+      await downloadInfographicImage(image.url, filename, { engrave, model: 'gpt-image-2', timestamp: Date.now() });
+      toast.success(engrave ? "Downloaded with ZEN AI Co. engraving!" : "Download complete!", { id: toastId });
+    } catch (err: any) {
+      console.error('Download failed', err);
+      const link = document.createElement('a');
+      link.href = image.url;
+      link.download = `zen_infographic_${Date.now()}.png`;
+      link.click();
+      toast.success("Downloaded visual", { id: toastId });
+    } finally {
+      setIsProcessing(false);
+    }
   };
 
   const handleCopy = async () => {
@@ -141,38 +153,68 @@ export const ImageWithActions: React.FC<ImageWithActionsProps> = ({
             animate={{ opacity: 1 }}
           />
           
-          {/* Action Bar overlay */}
+          {/* ZEN AI Co. Engraved Insignia Stamp Overlay */}
+          <div className="absolute top-4 left-4 z-10 pointer-events-none">
+            <div className="flex items-center gap-2 px-3 py-1.5 rounded-2xl bg-black/75 backdrop-blur-md border border-white/15 shadow-xl">
+              <ZenLogo size={20} engraved />
+              <span className="text-[10px] font-black tracking-wider uppercase text-white">
+                ZEN AI Co. Verified
+              </span>
+            </div>
+          </div>
+
+          {/* Action Bar overlay (Desktop Hover & Mobile Tap) */}
           <div className={cn(
-            "absolute inset-0 bg-slate-950/60 backdrop-blur-md opacity-0 group-hover:opacity-100 transition-all duration-500 flex items-center justify-center gap-4 z-10",
-            (isAnyLoading || isTextEditMode) && "pointer-events-none opacity-0"
+            "absolute inset-0 bg-slate-950/70 backdrop-blur-md transition-all duration-300 flex items-center justify-center gap-4 z-10",
+            (isAnyLoading || isTextEditMode) ? "pointer-events-none opacity-0" : (
+              showMobileActions ? "opacity-100 pointer-events-auto" : "opacity-0 md:group-hover:opacity-100 pointer-events-none md:pointer-events-auto"
+            )
           )}>
-            <div className="grid grid-cols-4 gap-4 p-6">
+            <div className="grid grid-cols-4 gap-3 sm:gap-4 p-4 sm:p-6 max-w-md w-full">
               {[
                 { icon: 'refresh', color: 'bg-blue-600', label: 'Regen', action: () => handleAction(onRegenerate, "Regenerating visual...") },
                 { icon: 'brush', color: 'bg-purple-600', label: 'Brush', action: () => setIsEditorOpen(true) },
                 { icon: 'text', color: 'bg-amber-600', label: 'Magic Text', action: () => setIsTextEditMode(true) },
                 { icon: 'database', color: 'bg-indigo-600', label: 'Data', action: () => setShowDataCard(true) },
                 { icon: 'expand', color: 'bg-slate-600', label: 'Expand', action: () => onExpand(image.url) },
-                { icon: 'download', color: 'bg-emerald-600', label: 'Save', action: handleDownload },
+                { icon: 'stamp', color: 'bg-gradient-to-r from-blue-600 to-indigo-600', label: 'Engraved', action: () => handleDownload(true) },
+                { icon: 'download', color: 'bg-emerald-600', label: 'Raw Save', action: () => handleDownload(false) },
                 { icon: 'copy', color: 'bg-cyan-600', label: 'Copy', action: handleCopy },
                 { icon: 'refine', color: 'bg-rose-600', label: 'Enhance', action: () => handleAction(() => onEnhance(image.id), "Enhancing visual quality...") }
-              ].map((btn, i) => (
+              ].slice(0, 8).map((btn, i) => (
                 <motion.button 
                   key={i}
-                  whileHover={{ scale: 1.1 }}
-                  whileTap={{ scale: 0.9 }}
+                  whileHover={{ scale: 1.08 }}
+                  whileTap={{ scale: 0.92 }}
                   onClick={btn.action} 
                   className={cn(
-                    "flex flex-col items-center gap-2 p-4 rounded-3xl text-white transition-all border border-white/10",
+                    "flex flex-col items-center justify-center gap-1.5 p-3 sm:p-4 rounded-2xl text-white transition-all border border-white/10 shadow-lg min-h-[64px]",
                     btn.color
                   )}
                 >
-                  <Icon name={btn.icon} className="h-6 w-6"/>
-                  <span className="text-[10px] font-black uppercase tracking-widest">{btn.label}</span>
+                  <Icon name={btn.icon} className="h-5 w-5"/>
+                  <span className="text-[9px] font-black uppercase tracking-wider text-center">{btn.label}</span>
                 </motion.button>
               ))}
             </div>
+
+            {/* Mobile close overlay button */}
+            {showMobileActions && (
+              <button 
+                onClick={() => setShowMobileActions(false)}
+                className="absolute top-4 right-4 p-2 bg-white/10 text-white rounded-full md:hidden"
+              >
+                <Icon name="close" className="h-5 w-5" />
+              </button>
+            )}
           </div>
+
+          {/* Mobile Tap Target Indicator */}
+          <div 
+            onClick={() => setShowMobileActions(prev => !prev)}
+            className="md:hidden absolute inset-0 z-0 cursor-pointer"
+            aria-label="Tap to view actions"
+          />
 
           {/* Data Refinement Layer */}
           <AnimatePresence>
@@ -317,6 +359,38 @@ export const ImageWithActions: React.FC<ImageWithActionsProps> = ({
               </motion.div>
             )}
           </AnimatePresence>
+        </div>
+
+        {/* Mobile Quick Action Strip (Touch-Optimized) */}
+        <div className="md:hidden mt-4 flex items-center gap-2 overflow-x-auto pb-1 preset-scrollbar">
+          <button
+            onClick={() => handleDownload(true)}
+            className="flex-1 min-w-[130px] flex items-center justify-center gap-2 py-3 px-3 rounded-2xl bg-gradient-to-r from-blue-600 to-indigo-600 text-white font-bold text-xs uppercase tracking-wider shadow-lg active:scale-95"
+          >
+            <Icon name="stamp" className="h-4 w-4" />
+            <span>Engraved Save</span>
+          </button>
+          <button
+            onClick={() => handleAction(onRegenerate, "Regenerating visual...")}
+            className="flex items-center gap-1.5 py-3 px-3 rounded-2xl bg-slate-900 border border-white/10 text-white text-xs font-semibold active:scale-95 whitespace-nowrap"
+          >
+            <Icon name="refresh" className="h-4 w-4 text-blue-400" />
+            <span>Regen</span>
+          </button>
+          <button
+            onClick={() => setIsEditorOpen(true)}
+            className="flex items-center gap-1.5 py-3 px-3 rounded-2xl bg-slate-900 border border-white/10 text-white text-xs font-semibold active:scale-95 whitespace-nowrap"
+          >
+            <Icon name="brush" className="h-4 w-4 text-purple-400" />
+            <span>Brush</span>
+          </button>
+          <button
+            onClick={() => onExpand(image.url)}
+            className="p-3 rounded-2xl bg-slate-900 border border-white/10 text-white active:scale-95"
+            title="Expand"
+          >
+            <Icon name="expand" className="h-4 w-4" />
+          </button>
         </div>
 
         {/* Quick Edit Prompt */}
