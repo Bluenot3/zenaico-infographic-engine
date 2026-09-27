@@ -104,6 +104,11 @@ export interface GenerationOptions {
   // Upscaled Controls
   lighting?: 'studio' | 'cinematic' | 'natural' | 'neon-cyberpunk' | 'golden-hour';
   renderEngine?: 'unreal-engine-5' | 'octane-render' | 'v-ray' | 'digital-painting' | 'vector-art';
+
+  // Cross-Domain Intertwining
+  stylePreset?: StylePreset;
+  stylePresetName?: string;
+  stylePromptSuffix?: string;
 }
 
 export interface SportsTeam {

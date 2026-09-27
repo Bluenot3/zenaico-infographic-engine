@@ -6,11 +6,235 @@ import { sportsService } from '../services/sportsService';
 import * as aiService from '../services/geminiService';
 import { historyService } from '../services/historyService';
 import type { SportsGame, SportsFeedResponse, StylePreset, HistoryItem, GenerationOptions } from '../types';
+import { DomainHarmonizer } from '../services/domainHarmonizer';
 import { Icon } from './common/Icon';
 import { Spinner } from './common/Spinner';
 import { ZenLogo } from './common/ZenLogo';
 import { downloadInfographicImage } from '../lib/engraveImage';
 import { cn } from '../lib/utils';
+
+export const FEATURED_TECH_SCIENCE_MATCHUPS: SportsGame[] = [
+  {
+    id: "tech-b200-mi300",
+    sport: "OTHER",
+    league: "AI Hardware Championship",
+    gameDate: "Continuous Benchmark",
+    status: "FINAL",
+    quarterOrTime: "Tale of the Tape",
+    headline: "NVIDIA Blackwell B200 vs AMD Instinct MI300X AI Superchips",
+    summary: "Head-to-head architectural showdown between NVIDIA dual-die B200 and AMD 3D-chiplet MI300X processors across FP4/FP8 compute, memory bandwidth, and thermal dissipation.",
+    venue: "TSMC 4NP CoWoS Packaging Cleanroom",
+    stadiumName: "TSMC Advanced Packaging Cleanroom",
+    homeTeam: {
+      name: "AMD Instinct MI300X",
+      shortName: "MI300X",
+      rank: 2,
+      record: "153B Transistors",
+      color: "#ED1C24",
+      logoText: "AMD",
+      uniformBrand: "3D Chiplet X3D Architecture",
+      uniformStyle: "192GB HBM3 Memory (5.3 TB/s)"
+    },
+    awayTeam: {
+      name: "NVIDIA Blackwell B200",
+      shortName: "B200",
+      rank: 1,
+      record: "208B Transistors",
+      color: "#76B900",
+      logoText: "NVDA",
+      uniformBrand: "Dual-Die Co-Packaged Silicon",
+      uniformStyle: "192GB HBM3e Memory (8.0 TB/s)"
+    },
+    score: { away: 20, home: 10 },
+    keyStats: [
+      { label: "B200 FP4 Compute", value: "20 PFLOPS" },
+      { label: "MI300X FP8 Compute", value: "10.4 PFLOPS" },
+      { label: "Memory Bandwidth", value: "8.0 TB/s vs 5.3 TB/s" },
+      { label: "Interconnect Speed", value: "1.8 TB/s NVLink 5 vs 896 GB/s Infinity Fabric" }
+    ],
+    webImageReferences: [
+      "TSMC CoWoS advanced packaging wafer",
+      "NVIDIA Blackwell dual-die silicon photolithography",
+      "AMD MI300X 3D stacked chiplet layout"
+    ]
+  },
+  {
+    id: "tech-quantum-showdown",
+    sport: "OTHER",
+    league: "Quantum Computing Duel",
+    gameDate: "Lab Benchmark",
+    status: "FINAL",
+    quarterOrTime: "Qubit Telemetry",
+    headline: "Superconducting Transmon Qubits vs Trapped Ion Processors",
+    summary: "High-energy sports broadcast telemetry duel comparing superconducting circuit gate speeds against trapped ion fidelity, coherence times, and full all-to-all connectivity.",
+    venue: "Cryogenic Dilution Refrigerator",
+    stadiumName: "Cryogenic Dilution Refrigerator Lab",
+    homeTeam: {
+      name: "Trapped Ion Processors",
+      shortName: "ION-Q",
+      rank: 2,
+      record: "99.9% 2-Qubit Fidelity",
+      color: "#00A8FF",
+      logoText: "IONS",
+      uniformBrand: "Laser Trapping & Shuttling",
+      uniformStyle: "Room-Temp RF Paul Vacuum Trap"
+    },
+    awayTeam: {
+      name: "Superconducting Transmon Qubits",
+      shortName: "SC-QUBIT",
+      rank: 1,
+      record: "10-50ns Gate Speed",
+      color: "#9B51E0",
+      logoText: "SC-Q",
+      uniformBrand: "Josephson Junctions",
+      uniformStyle: "15mK Dilution Cryostat"
+    },
+    score: { away: 99, home: 99 },
+    keyStats: [
+      { label: "Gate Speed", value: "10-50ns vs 10-100μs" },
+      { label: "Coherence Time (T2)", value: "100-300μs vs 10-100 Seconds" },
+      { label: "Operating Temp", value: "15mK Cryo vs Room Temp Trap" },
+      { label: "2-Qubit Gate Fidelity", value: "99.5% vs 99.9%" }
+    ],
+    webImageReferences: [
+      "Gold-plated dilution refrigerator chandelier",
+      "Vacuum chamber RF Paul ion trap fluorescence",
+      "Silicon quantum processor chip with microwave resonators"
+    ]
+  },
+  {
+    id: "science-crispr-prime",
+    sport: "OTHER",
+    league: "Biomedical Breakthroughs",
+    gameDate: "Clinical Trials 2026",
+    status: "FINAL",
+    quarterOrTime: "Genomic Showdown",
+    headline: "CRISPR-Cas9 Endonuclease vs Prime Editing Reverse Transcriptase",
+    summary: "Sports analyst breakdown comparing targeted double-strand break editing against search-and-replace reverse transcriptase prime editing precision.",
+    venue: "Biotechnology Genomic Cleanroom",
+    stadiumName: "Biomedical Research Facility",
+    homeTeam: {
+      name: "Prime Editing Reverse Transcriptase",
+      shortName: "PRIME",
+      rank: 2,
+      record: "<1% Off-Target",
+      color: "#10B981",
+      logoText: "PRIME",
+      uniformBrand: "Engineered Cas9 Nickase + RT",
+      uniformStyle: "Search-and-Replace PegRNA"
+    },
+    awayTeam: {
+      name: "CRISPR-Cas9 Endonuclease",
+      shortName: "CRISPR",
+      rank: 1,
+      record: "85-95% On-Target",
+      color: "#F59E0B",
+      logoText: "CAS9",
+      uniformBrand: "Guide RNA Guided Molecular Scissors",
+      uniformStyle: "Streptococcus pyogenes Cas9"
+    },
+    score: { away: 95, home: 80 },
+    keyStats: [
+      { label: "On-Target Efficiency", value: "85-95% vs 60-80%" },
+      { label: "Off-Target Risk", value: "Moderate Indels vs <1% Clean" },
+      { label: "Clinical Pipeline", value: "120+ Active vs 12 Active Trials" },
+      { label: "Max Insertion Size", value: "Up to 10kb vs Up to 100bp" }
+    ],
+    webImageReferences: [
+      "CRISPR-Cas9 molecular complex bound to DNA target",
+      "Prime editing reverse transcriptase pegRNA crystal structure",
+      "Next-generation sequencer flow cell telemetry"
+    ]
+  },
+  {
+    id: "science-starship-sls",
+    sport: "OTHER",
+    league: "Orbital Heavy Lift",
+    gameDate: "Orbital Launch 2026",
+    status: "FINAL",
+    quarterOrTime: "Rocket Telemetry",
+    headline: "SpaceX Starship Super Heavy vs NASA SLS Artemis Rocket",
+    summary: "Championship gameday presentation comparing full reusable multi-engine stainless steel rocketry against deep-space heavy-lift exploration.",
+    venue: "Starbase Orbital Launch Mount & Cape Canaveral Pad 39B",
+    stadiumName: "Orbital Launch Pad",
+    homeTeam: {
+      name: "NASA Space Launch System",
+      shortName: "SLS",
+      rank: 2,
+      record: "4 RS-25 + 2 SRBs",
+      color: "#EA580C",
+      logoText: "NASA",
+      uniformBrand: "Exploration Core Stage",
+      uniformStyle: "Orange Foam Insulation + White Solid Boosters"
+    },
+    awayTeam: {
+      name: "SpaceX Starship Super Heavy",
+      shortName: "STARSHIP",
+      rank: 1,
+      record: "33 Raptor V3 Engines",
+      color: "#2563EB",
+      logoText: "SPACEX",
+      uniformBrand: "Full Stack Reusability",
+      uniformStyle: "Stainless Steel 304L + Black Hexagonal Heatshield"
+    },
+    score: { away: 167, home: 88 },
+    keyStats: [
+      { label: "Liftoff Thrust", value: "16.7 Million lbf vs 8.8 Million lbf" },
+      { label: "Payload to LEO", value: "150-250 Tons (Reusable) vs 95 Tons" },
+      { label: "Full Stack Height", value: "121 Meters vs 98 Meters" },
+      { label: "Estimated Cost/Launch", value: "<$10M (Target) vs $2.2B" }
+    ],
+    webImageReferences: [
+      "Starship Super Heavy 33-engine static fire ring",
+      "NASA SLS Artemis rollout on Mobile Launcher",
+      "Mechanical Chopstick Mechazilla booster catch system"
+    ]
+  },
+  {
+    id: "science-iter-w7x-fusion",
+    sport: "OTHER",
+    league: "Nuclear Fusion Power",
+    gameDate: "Plasma Ignition 2026",
+    status: "FINAL",
+    quarterOrTime: "Plasma Confinement",
+    headline: "ITER Magnetic Tokamak vs Wendelstein 7-X Stellarator Showdown",
+    summary: "Clean energy championship duel comparing pulsed high-current toroidal magnetic confinement against continuous steady-state modular stellarator coils.",
+    venue: "Cadarache Fusion Facility & Greifswald IPP",
+    stadiumName: "International Fusion Reactor Core",
+    homeTeam: {
+      name: "Wendelstein 7-X Stellarator",
+      shortName: "W7-X",
+      rank: 2,
+      record: "50 Non-Planar Coils",
+      color: "#06B6D4",
+      logoText: "W7-X",
+      uniformBrand: "Twisted Modular Steady-State",
+      uniformStyle: "Superconducting Niobium-Titanium Coils"
+    },
+    awayTeam: {
+      name: "ITER Magnetic Tokamak",
+      shortName: "ITER",
+      rank: 1,
+      record: "840 m³ Plasma Volume",
+      color: "#EC4899",
+      logoText: "ITER",
+      uniformBrand: "Toroidal Current + Central Solenoid",
+      uniformStyle: "Beryllium First Wall + Cryostat"
+    },
+    score: { away: 150, home: 20 },
+    keyStats: [
+      { label: "Plasma Core Temp", value: "150 Million °C vs 20 Million °C" },
+      { label: "Target Q Gain", value: "Q ≥ 10 (500MW) vs Continuous Physics" },
+      { label: "Pulse Duration", value: "400s Pulses vs Up to 30 Min Steady" },
+      { label: "Magnetic Field", value: "5.3 Tesla vs 3.0 Tesla" }
+    ],
+    webImageReferences: [
+      "ITER vacuum vessel sector module installation",
+      "Wendelstein 7-X intricate non-planar magnet coil geometry",
+      "Glowing hydrogen plasma fusion telemetry camera readout"
+    ]
+  }
+];
 
 interface SportsVariation {
   id: string;
@@ -27,7 +251,7 @@ interface SportsHubProps {
 }
 
 export const SportsHub: React.FC<SportsHubProps> = ({ onLoadIntoStudio, onOpenSettings }) => {
-  const [activeTab, setActiveTab] = useState<'all' | 'fsu' | 'cfb' | 'nfl' | 'forecast'>('all');
+  const [activeTab, setActiveTab] = useState<'all' | 'intertwined' | 'fsu' | 'cfb' | 'nfl' | 'forecast'>('all');
   const [searchQuery, setSearchQuery] = useState('');
   const [games, setGames] = useState<SportsGame[]>([]);
   const [isLoadingFeed, setIsLoadingFeed] = useState(true);
@@ -64,12 +288,37 @@ export const SportsHub: React.FC<SportsHubProps> = ({ onLoadIntoStudio, onOpenSe
   // Expanded box score state
   const [expandedBoxScoreId, setExpandedBoxScoreId] = useState<string | null>(null);
 
+  // Custom article/topic state for Cross-Domain Fusion tab
+  const [customArticleTopic, setCustomArticleTopic] = useState('');
+
   // Fetch games on tab or search change
   const loadGames = async (forceRefresh: boolean = false) => {
     if (forceRefresh) setIsRefreshing(true);
     else setIsLoadingFeed(true);
 
     try {
+      if (activeTab === 'intertwined') {
+        const query = searchQuery.trim().toLowerCase();
+        const filtered = query
+          ? FEATURED_TECH_SCIENCE_MATCHUPS.filter(g => 
+              g.headline.toLowerCase().includes(query) ||
+              g.summary.toLowerCase().includes(query) ||
+              g.homeTeam.name.toLowerCase().includes(query) ||
+              g.awayTeam.name.toLowerCase().includes(query)
+            )
+          : FEATURED_TECH_SCIENCE_MATCHUPS;
+
+        setGames(filtered);
+        setFeedMetadata({
+          source: 'Cross-Domain Tech & Science Intelligence',
+          lastUpdated: 'Live Intertwiner Active',
+          headline: 'Technology & Science in ESPN Sports Broadcast HUD'
+        });
+        setIsLoadingFeed(false);
+        setIsRefreshing(false);
+        return;
+      }
+
       const sportParam = activeTab === 'fsu' ? 'fsu' : activeTab === 'cfb' ? 'cfb' : activeTab === 'nfl' ? 'nfl' : 'all';
       const response: SportsFeedResponse = await sportsService.getFeed({
         sport: sportParam,
@@ -103,6 +352,64 @@ export const SportsHub: React.FC<SportsHubProps> = ({ onLoadIntoStudio, onOpenSe
     }
   };
 
+  const handleSynthesizeCustomArticle = (topicOrText: string, preferredStyleId?: string) => {
+    const trimmed = topicOrText.trim();
+    if (!trimmed) {
+      toast.error('Please enter a technological or scientific article/topic first.');
+      return;
+    }
+
+    const domain = DomainHarmonizer.detectDomain(trimmed.slice(0, 100), trimmed);
+    const styleToUse = STYLE_PRESETS.find(s => s.id === (preferredStyleId || 'espn_tech_breakdown')) || STYLE_PRESETS[0];
+
+    const lines = trimmed.split('\n').map(l => l.trim()).filter(Boolean);
+    const title = lines[0]?.slice(0, 80) || (domain === 'technology' ? 'Tech Specification Duel' : 'Scientific Breakthrough Overview');
+
+    const customMatchup: SportsGame = {
+      id: `custom-cross-${Date.now()}`,
+      sport: 'OTHER',
+      league: domain === 'technology' ? 'Technology Specification Duel' : domain === 'scientific' ? 'Scientific Breakthrough Analysis' : 'Cross-Domain Intelligence',
+      gameDate: 'Live 2026 Synthesis',
+      status: 'FINAL',
+      quarterOrTime: 'Broadcast Overview',
+      headline: title,
+      summary: trimmed.slice(0, 400),
+      venue: 'High-Tech Broadcast Facility',
+      stadiumName: 'Broadcast Analytics Studio',
+      homeTeam: {
+        name: 'Architecture & Capability Alpha',
+        shortName: 'ALPHA',
+        rank: 1,
+        color: '#2563EB',
+        logoText: 'ALPHA',
+        uniformBrand: 'Verified Architecture',
+        uniformStyle: 'Next-Gen Specification'
+      },
+      awayTeam: {
+        name: 'Comparative Benchmark Beta',
+        shortName: 'BETA',
+        rank: 2,
+        color: '#D97706',
+        logoText: 'BETA',
+        uniformBrand: 'Baseline Architecture',
+        uniformStyle: 'Comparative Performance'
+      },
+      score: { away: 95, home: 98 },
+      keyStats: [
+        { label: 'Domain Classification', value: domain.toUpperCase() },
+        { label: 'Broadcast Style', value: styleToUse.name },
+        { label: 'Quality Guarantee', value: '100% Anti-Morphing Enforced' },
+        { label: 'Telemetry Visuals', value: '3D Scorebug & Tale of the Tape' }
+      ]
+    };
+
+    setSelectedGameForSynthesis(customMatchup);
+    setSelectedStyle(styleToUse);
+    setGeneratedVariations([]);
+    setSelectedVariationIndex(0);
+    setRefinementPrompt('');
+  };
+
   useEffect(() => {
     loadGames(false);
   }, [activeTab]);
@@ -120,7 +427,10 @@ export const SportsHub: React.FC<SportsHubProps> = ({ onLoadIntoStudio, onOpenSe
     setRefinementPrompt('');
     
     // Choose appropriate default preset
-    if (game.isFloridaState) {
+    if (game.id.startsWith('tech-') || game.id.startsWith('science-') || game.id.startsWith('custom-cross-') || game.sport === 'OTHER') {
+      const techPreset = STYLE_PRESETS.find(s => s.id === 'espn_tech_breakdown') || STYLE_PRESETS[0];
+      setSelectedStyle(techPreset);
+    } else if (game.isFloridaState) {
       const fsuPreset = STYLE_PRESETS.find(s => s.id === 'fsu_garnet_gold');
       if (fsuPreset) setSelectedStyle(fsuPreset);
     } else {
@@ -169,11 +479,26 @@ export const SportsHub: React.FC<SportsHubProps> = ({ onLoadIntoStudio, onOpenSe
         const homeUniform = selectedGameForSynthesis.homeTeam.uniformBrand || 'official uniform';
         const awayUniform = selectedGameForSynthesis.awayTeam.uniformBrand || 'official uniform';
 
+        const harmony = DomainHarmonizer.harmonize({
+          topic: `${selectedGameForSynthesis.awayTeam.name} vs ${selectedGameForSynthesis.homeTeam.name}`,
+          textContent: `${selectedGameForSynthesis.headline} ${selectedGameForSynthesis.summary}`,
+          stylePreset: selectedStyle
+        });
+
+        const activeStylePrompt = harmony.isIntertwined ? harmony.harmonizedStylePrompt : selectedStyle.promptSuffix;
+        const activePositive = harmony.isIntertwined
+          ? `${harmony.adaptedPositivePrompt}, 50/50 dual-sided balance, official logos and verified labels, 8k resolution, razor sharp typography, ${selectedStyle.promptSuffix}`
+          : `masterpiece, 50/50 balanced dual-team broadcast infographic, both teams side-by-side in verified official apparel (${selectedGameForSynthesis.awayTeam.name} wearing authentic ${awayUniform}, ${selectedGameForSynthesis.homeTeam.name} wearing authentic ${homeUniform}), verified 2026 starting players and jersey numbers (such as Gunner Stockton #14 for Georgia Bulldogs, Rocco Becht #3 for Penn State), set against authentic ${stadiumInfo}, grounded in real game web photography (${webPhotoContext}), official logos and helmets, dual star player spotlight cards, 8k resolution, razor sharp typography, crisp scorebug, vibrant colors, ${selectedStyle.promptSuffix}`;
+
+        const activeNegative = harmony.isIntertwined
+          ? `${harmony.strictNegativePrompt}, Carson Beck on Georgia Bulldogs, departed players, obsolete 2024 rosters, single-team bias, wrong uniform brand`
+          : 'Carson Beck on Georgia Bulldogs, departed players, obsolete 2024 rosters, single-team bias, wrong uniform brand, blurry, distorted, amateur';
+
         const genOptions: GenerationOptions = {
           targetAudience: 'general',
           tone: 'professional',
-          keyElements: `${selectedGameForSynthesis.keyStats.map(s => `${s.label}: ${s.value}`).join(', ')}. Home uniform: ${homeUniform}. Away uniform: ${awayUniform}. Stadium: ${stadiumInfo}.`,
-          excludeElements: 'Carson Beck on Georgia Bulldogs, departed players, obsolete 2024 rosters, single-team bias, wrong uniform brand, blurry, distorted, amateur',
+          keyElements: `${selectedGameForSynthesis.keyStats.map(s => `${s.label}: ${s.value}`).join(', ')}. Venue: ${stadiumInfo}.`,
+          excludeElements: activeNegative,
           colorPalette: `${selectedGameForSynthesis.awayTeam.color || '#00338D'} (50%) and ${selectedGameForSynthesis.homeTeam.color || '#E31837'} (50%), dual-team balance`,
           layout: 'data-heavy',
           numPoints: plan.points.length,
@@ -181,15 +506,18 @@ export const SportsHub: React.FC<SportsHubProps> = ({ onLoadIntoStudio, onOpenSe
           language: 'English',
           includeDataVis: true,
           dataEntries: selectedGameForSynthesis.keyStats.map(s => `${s.label}: ${s.value}`),
-          positivePrompt: `masterpiece, 50/50 balanced dual-team broadcast infographic, both teams side-by-side in verified official apparel (${selectedGameForSynthesis.awayTeam.name} wearing authentic ${awayUniform}, ${selectedGameForSynthesis.homeTeam.name} wearing authentic ${homeUniform}), verified 2026 starting players and jersey numbers (such as Gunner Stockton #14 for Georgia Bulldogs, Rocco Becht #3 for Penn State), set against authentic ${stadiumInfo}, grounded in real game web photography (${webPhotoContext}), official logos and helmets, dual star player spotlight cards, 8k resolution, razor sharp typography, crisp scorebug, vibrant colors, ${selectedStyle.promptSuffix}`,
+          positivePrompt: activePositive,
           visualComplexity: 'ultra-detailed',
           lighting: 'cinematic',
-          renderEngine: 'unreal-engine-5'
+          renderEngine: 'unreal-engine-5',
+          stylePreset: selectedStyle,
+          stylePresetName: selectedStyle.name,
+          stylePromptSuffix: activeStylePrompt
         };
 
         const urls = await aiService.generateInfographicImage(
           plan.imagePrompt,
-          selectedStyle.promptSuffix,
+          activeStylePrompt,
           genOptions
         );
 
@@ -456,6 +784,7 @@ export const SportsHub: React.FC<SportsHubProps> = ({ onLoadIntoStudio, onOpenSe
           <div className="flex flex-wrap gap-2 pt-2">
             {[
               { id: 'all', label: 'All Live Wire', icon: 'zap' },
+              { id: 'intertwined', label: '⚡ Tech & Science Fusion', icon: 'sparkles' },
               { id: 'fsu', label: 'Florida State Central 🍢', icon: 'shield' },
               { id: 'cfb', label: 'College Football (Top 25)', icon: 'trophy' },
               { id: 'nfl', label: 'NFL Sunday Slate', icon: 'sparkles' },
@@ -467,7 +796,9 @@ export const SportsHub: React.FC<SportsHubProps> = ({ onLoadIntoStudio, onOpenSe
                 className={cn(
                   "py-2 px-4 rounded-xl text-xs font-bold transition-all flex items-center gap-2 border uppercase tracking-wider",
                   activeTab === tab.id
-                    ? "bg-white text-slate-950 border-white shadow-lg"
+                    ? tab.id === 'intertwined'
+                      ? "bg-gradient-to-r from-blue-600 via-indigo-600 to-purple-600 text-white border-blue-400 shadow-lg shadow-blue-600/30"
+                      : "bg-white text-slate-950 border-white shadow-lg"
                     : "bg-white/5 hover:bg-white/10 text-slate-300 border-white/10"
                 )}
               >
@@ -477,6 +808,96 @@ export const SportsHub: React.FC<SportsHubProps> = ({ onLoadIntoStudio, onOpenSe
           </div>
         </div>
       </div>
+
+      {/* Dedicated Cross-Domain Fusion Console for Tech & Science Articles in Sports HUD */}
+      {activeTab === 'intertwined' && (
+        <motion.div
+          initial={{ opacity: 0, y: 12 }}
+          animate={{ opacity: 1, y: 0 }}
+          className="rounded-3xl p-6 bg-gradient-to-r from-blue-950/60 via-purple-950/40 to-slate-900 border border-blue-500/30 shadow-2xl space-y-5"
+        >
+          <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
+            <div className="space-y-1">
+              <div className="flex items-center gap-2">
+                <span className="p-2 rounded-xl bg-blue-500/20 text-blue-400 border border-blue-500/30">
+                  <Icon name="sparkles" className="h-5 w-5" />
+                </span>
+                <h3 className="text-xl font-black text-white tracking-tight">
+                  Cross-Domain Intertwiner: Tech & Science in ESPN Sports Analyst HUD
+                </h3>
+              </div>
+              <p className="text-xs text-slate-300 max-w-3xl">
+                Paste any scientific or technological article or complex topic. The engine automatically adapts it into an elite ESPN Primetime live broadcast telemetry HUD with 3D scorebug comparisons, Tale-of-the-Tape specification cards, and strict 0% morphing / zero chimeric artifacts guarantee.
+              </p>
+            </div>
+
+            <div className="flex items-center gap-2 shrink-0">
+              <span className="px-3 py-1.5 rounded-full bg-emerald-500/20 border border-emerald-500/30 text-emerald-300 text-xs font-black uppercase tracking-wider flex items-center gap-1.5">
+                <span>🛡️ 0% Morphing Guarantee</span>
+              </span>
+            </div>
+          </div>
+
+          {/* Interactive Custom Article / Topic Input */}
+          <div className="space-y-3 bg-black/40 p-4 rounded-2xl border border-white/5">
+            <label className="text-xs font-bold text-slate-300 uppercase tracking-wider flex items-center justify-between">
+              <span>Synthesize Custom Tech / Scientific Article or Showdown</span>
+              <span className="text-[11px] text-blue-400 font-semibold">Instant 4K ESPN HUD Infographic</span>
+            </label>
+            <div className="flex flex-col sm:flex-row gap-3">
+              <input
+                type="text"
+                value={customArticleTopic}
+                onChange={e => setCustomArticleTopic(e.target.value)}
+                placeholder="e.g. Brain-Computer Interfaces: Neuralink N1 vs Synchron Stentrode, or paste an article topic..."
+                className="flex-1 bg-slate-950/80 border border-white/10 rounded-xl px-4 py-3 text-sm text-white placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all"
+                onKeyDown={e => {
+                  if (e.key === 'Enter') {
+                    handleSynthesizeCustomArticle(customArticleTopic);
+                  }
+                }}
+              />
+              <button
+                type="button"
+                onClick={() => handleSynthesizeCustomArticle(customArticleTopic, 'espn_tech_breakdown')}
+                className="px-5 py-3 rounded-xl bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-500 hover:to-indigo-500 text-white font-bold text-xs uppercase tracking-wider shadow-lg shadow-blue-600/30 active:scale-95 flex items-center justify-center gap-2 shrink-0"
+              >
+                <Icon name="sparkles" className="h-4 w-4" />
+                <span>⚡ Synthesize ESPN HUD</span>
+              </button>
+              <button
+                type="button"
+                onClick={() => handleSynthesizeCustomArticle(customArticleTopic, 'scientific_sports_biomechanics')}
+                className="px-4 py-3 rounded-xl bg-white/5 hover:bg-white/10 border border-white/10 text-slate-300 hover:text-white font-bold text-xs uppercase tracking-wider active:scale-95 flex items-center justify-center gap-1.5 shrink-0"
+              >
+                <Icon name="layout" className="h-4 w-4 text-cyan-400" />
+                <span>📐 Blueprint</span>
+              </button>
+            </div>
+            <div className="flex flex-wrap items-center gap-2 pt-1 text-[11px] text-slate-400">
+              <span className="font-semibold text-slate-500">Quick-Load Topics:</span>
+              {[
+                "Quantum Supremacy: Superconducting vs Trapped Ions",
+                "CRISPR-Cas9 vs Prime Gene Editing",
+                "SpaceX Starship Super Heavy vs NASA SLS",
+                "Solid-State Batteries vs Lithium-Ion"
+              ].map((sample, sIdx) => (
+                <button
+                  key={sIdx}
+                  type="button"
+                  onClick={() => {
+                    setCustomArticleTopic(sample);
+                    handleSynthesizeCustomArticle(sample);
+                  }}
+                  className="px-2.5 py-1 rounded-lg bg-white/5 hover:bg-white/10 border border-white/5 text-slate-300 hover:text-white transition-all text-[10px]"
+                >
+                  {sample}
+                </button>
+              ))}
+            </div>
+          </div>
+        </motion.div>
+      )}
 
       {/* Feed Status and Count Indicator */}
       <div className="flex items-center justify-between px-2">
@@ -852,6 +1273,37 @@ export const SportsHub: React.FC<SportsHubProps> = ({ onLoadIntoStudio, onOpenSe
                   </div>
                 )}
               </div>
+
+              {/* Live Domain Harmonization Status Indicator in Modal */}
+              {(() => {
+                const modalHarmony = selectedGameForSynthesis ? DomainHarmonizer.harmonize({
+                  topic: `${selectedGameForSynthesis.awayTeam.name} vs ${selectedGameForSynthesis.homeTeam.name}`,
+                  textContent: `${selectedGameForSynthesis.headline} ${selectedGameForSynthesis.summary}`,
+                  stylePreset: selectedStyle
+                }) : null;
+
+                if (!modalHarmony || !modalHarmony.isIntertwined) return null;
+
+                return (
+                  <motion.div
+                    initial={{ opacity: 0, y: -6 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    className="p-4 rounded-2xl bg-gradient-to-r from-blue-950/70 via-purple-950/50 to-slate-900 border border-blue-500/40 space-y-2 shadow-xl"
+                  >
+                    <div className="flex items-center justify-between">
+                      <div className="flex items-center gap-2">
+                        <span className="w-2.5 h-2.5 rounded-full bg-cyan-400 animate-pulse" />
+                        <span className="text-xs font-black text-white">{modalHarmony.fusionHeadline}</span>
+                      </div>
+                      <span className="text-[10px] px-2.5 py-0.5 rounded-full bg-emerald-500/20 text-emerald-300 font-bold border border-emerald-500/30">
+                        🛡️ 0% Morphing Guarantee
+                      </span>
+                    </div>
+                    <p className="text-xs text-slate-300">{modalHarmony.fusionDescription}</p>
+                    <p className="text-[11px] text-slate-400 italic">{modalHarmony.antiMorphingDirectives}</p>
+                  </motion.div>
+                );
+              })()}
 
               {/* Configuration Controls Grid */}
               <div className="grid grid-cols-1 md:grid-cols-3 gap-6">

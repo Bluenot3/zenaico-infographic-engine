@@ -2,6 +2,38 @@
 import type { StylePreset } from './types';
 
 export const STYLE_PRESETS: StylePreset[] = [
+  // --- CROSS-DOMAIN INTERTWINED (Sports × Tech × Science) ---
+  {
+    id: 'espn_tech_breakdown',
+    name: 'ESPN Tech & Science Analyst HUD',
+    promptSuffix: 'official ESPN primetime live broadcast telemetry graphics package adapted for technological and scientific breakdowns, dark obsidian carbon-fiber and silicon wafer substrate (zero grass turf, zero sports field), dynamic illuminated benchmark scorebug telemetry, 3D broadcast motion graphics, symmetrical head-to-head "Tale of the Tape" specification cards framing authentic microchips, quantum processors, or molecular structures, high-contrast athletic sans-serif typography applied to engineering metrics, studio floodlights flare, metallic accents, live comparative stat bars, 8k resolution, award-winning technical infographic.',
+    category: 'Cross-Domain Fusion'
+  },
+  {
+    id: 'scientific_sports_biomechanics',
+    name: 'Sports Biomechanics & Physics Blueprint',
+    promptSuffix: 'ultra-precise technical engineering blueprint and aerospace kinematics analysis of athletic performance, measured drafting grid paper background, ballistic throwing vectors, player sprint velocity curves, passing arc trajectory geometry, architectural stadium bowl cross-section schematics, authentic human athletes in verified 2026 team uniforms and numbers, crisp white drafting line art, technical dimension callout arrows, high-contrast monospace typography, museum-grade technical infographic.',
+    category: 'Cross-Domain Fusion'
+  },
+  {
+    id: 'bloomberg_sports_intelligence',
+    name: 'Wall Street Sports Analytics Terminal',
+    promptSuffix: 'institutional Bloomberg Terminal Pro intelligence interface adapted for sports analytics, dark obsidian background with amber and phosphor orange data readouts, candlestick momentum volatility charts tracking 4 quarters of scoring swings, player value index matrices, EPA per play heatmaps, crisp monospace terminal typography, authentic verified team logos integrated into institutional glass modules.',
+    category: 'Cross-Domain Fusion'
+  },
+  {
+    id: 'davinci_biomechanics',
+    name: 'Da Vinci Athletic Biomechanics Codex',
+    promptSuffix: 'Renaissance master inventor archival notebook in the style of Leonardo Da Vinci Codex applied to athletic kinematics, antique sepia parchment with hand-inked crosshatching diagrams of human throwing motion and muscle kinetics, mirror-written Latin calligraphy marginalia, golden ratio parabolic arcs, anatomical Vitruvian proportions, museum archival masterpiece.',
+    category: 'Cross-Domain Fusion'
+  },
+  {
+    id: 'quantum_championship_hud',
+    name: 'Quantum Tech Championship Showdown',
+    promptSuffix: 'Super Bowl championship presentation adapted for next-generation quantum computing and semiconductor breakthroughs, polished chrome and titanium chassis, volumetric holographic HUD data readouts, cryogenic dilution refrigerator cross-sections, head-to-head architectural telemetry cards, dramatic studio laser graphics, executive technology visual.',
+    category: 'Cross-Domain Fusion'
+  },
+
   // --- SPORTS & GAMEDAY (Live Broadcast, Collegiate & Pro Athletics) ---
   {
     id: 'espn_broadcast_hud',

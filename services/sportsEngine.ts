@@ -1,6 +1,7 @@
 import { GoogleGenAI } from "@google/genai";
 import OpenAI from "openai";
 import type { SportsGame, SportsFeedResponse, InfographicContent } from "../types";
+import { DomainHarmonizer } from "./domainHarmonizer";
 
 export const DEFAULT_GAMES: SportsGame[] = [
   {
@@ -938,6 +939,18 @@ Do not wrap in markdown code blocks if possible. Return valid JSON only.`;
     const awayUniform = game.awayTeam.uniformBrand || 'official uniform';
     const webPhotoContext = game.webImageReferences?.join('; ') || 'Live high-speed game photography';
 
+    const effectivePreset = {
+      id: 'sports-sel',
+      name: styleName,
+      promptSuffix: stylePrompt,
+      category: 'Sports & Gameday'
+    };
+    const harmony = DomainHarmonizer.harmonize({
+      topic: `${game.awayTeam.name} vs ${game.homeTeam.name}`,
+      stylePreset: effectivePreset
+    });
+    const activeStylePrompt = harmony.isIntertwined ? harmony.harmonizedStylePrompt : stylePrompt;
+
     const prompt = `You are an elite sports infographic creative director and visual artist.
 Convert this real-world sports matchup into ${requestedCount} DISTINCT, publication-ready infographic concept plans.
 
@@ -954,7 +967,8 @@ GAME DATA & GROUND-TRUTH INTELLIGENCE:
 - SUMMARY: ${game.summary}
 - WEB IMAGE & PHOTOGRAPHY REFERENCE: ${webPhotoContext}
 - STAT COMPARISON: ${game.keyStats.map(s => `${s.label}: ${s.value}`).join(' | ')}
-- VISUAL STYLE: ${styleName} (${stylePrompt})
+- VISUAL STYLE: ${styleName} (${activeStylePrompt})
+- CROSS-DOMAIN INTEGRATION: ${harmony.isIntertwined ? `${harmony.fusionHeadline}. Apply the graphic language of ${styleName} (e.g. schematic vectors, telemetry HUD, or terminal data) seamlessly over the authentic gameday action without morphing athletes.` : 'Standard athletic broadcast graphic package.'}
 - EDITORIAL FOCUS: ${customAngle || 'Dual-Team Star Duel & Complete Box Score'}
 
 STRICT FACTUAL & VISUAL MANDATES:
@@ -1122,6 +1136,21 @@ Return ONLY a valid JSON object matching this schema:
     const awayUniform = game.awayTeam.uniformBrand || 'official uniform';
     const webPhotoContext = game.webImageReferences?.join('; ') || 'Live sports action photography';
 
+    const effectivePreset = {
+      id: 'sports-sel',
+      name: styleName,
+      promptSuffix: stylePrompt,
+      category: 'Sports & Gameday'
+    };
+    const harmony = DomainHarmonizer.harmonize({
+      topic: `${game.awayTeam.name} vs ${game.homeTeam.name}`,
+      stylePreset: effectivePreset
+    });
+    const activeStylePrompt = harmony.isIntertwined ? harmony.harmonizedStylePrompt : stylePrompt;
+    const antiMorphRule = harmony.isIntertwined 
+      ? `\n- CROSS-DOMAIN HARMONY & ANTI-MORPHING: ${harmony.fusionHeadline}. Strictly preserve authentic human athlete anatomy, verified team colors (${awayColor} & ${homeColor}), official logos, and realistic stadium setting. Channel the ${styleName} visual language exclusively through technical drafting lines, telemetry scorebug HUD, and analytical data overlays (never turn players into robots or cartoons).` 
+      : '';
+
     const scoreString = game.score 
       ? `${game.awayTeam.shortName} ${game.score.away}  —  ${game.score.home} ${game.homeTeam.shortName}` 
       : `${game.awayTeam.shortName}  VS  ${game.homeTeam.shortName}`;
@@ -1135,7 +1164,7 @@ CRITICAL FACTUAL UNIFORM & ROSTER ACCURACY MANDATE:
 - WEB ACTION REFERENCE CONTEXT: Grounded in real game photography: ${webPhotoContext}.
 - CENTER SCOREBUG: Symmetrical broadcast scorebug card displaying "${scoreString}", quarter/time "${game.quarterOrTime}", and venue "${stadium}".
 - CENTER/LOWER HUD: Symmetrical head-to-head comparison stat bars comparing both teams side-by-side for Passing Yards, Rushing Yards, Total Offense, and Turnovers.
-- VISUAL STYLE: ${styleName}. ${stylePrompt}.
+- VISUAL STYLE: ${styleName}. ${activeStylePrompt}.${antiMorphRule}
 - LIGHTING & AESTHETIC: High-intensity stadium floodlights, volumetric atmospheric arena fog, glossy glassmorphic telemetry cards, 3D broadcast motion graphic finish, razor-sharp 8k resolution. Zero single-team bias; both teams, players, and colors are equally celebrated.`;
   }
 

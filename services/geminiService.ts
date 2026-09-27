@@ -1,5 +1,7 @@
 import { GoogleGenAI, GenerateContentResponse, Type, Modality } from "@google/genai";
-import type { InfographicContent, ChatMessage, GenerationOptions, DetectedText, ApiSettings } from '../types';
+import type { InfographicContent, ChatMessage, GenerationOptions, DetectedText, ApiSettings, StylePreset } from '../types';
+import { DomainHarmonizer } from './domainHarmonizer';
+import { STYLE_PRESETS } from '../constants';
 
 const getApiSettings = (): ApiSettings => {
     try {
@@ -157,6 +159,24 @@ export const suggestDataPoints = async (topic: string): Promise<string[]> => {
 export const generateInfographicConcepts = async (topic: string, options: GenerationOptions): Promise<InfographicContent[]> => {
     const settings = getApiSettings();
     const validData = options.dataEntries.filter(e => e.trim() !== '');
+
+    const effectivePreset = options.stylePreset || 
+        STYLE_PRESETS.find(s => s.name === options.stylePresetName || s.promptSuffix === options.stylePromptSuffix) || 
+        STYLE_PRESETS[0];
+
+    const harmony = DomainHarmonizer.harmonize({
+        topic,
+        stylePreset: effectivePreset,
+        options
+    });
+
+    const crossDomainGuidance = harmony.isIntertwined 
+        ? `\nCROSS-DOMAIN STYLE HARMONY ACTIVATED: ${harmony.fusionHeadline}
+${harmony.fusionDescription}
+${harmony.antiMorphingDirectives}
+Ensure the 4 infographic concepts creatively translate the visual archetype (${harmony.styleArchetype}) onto the authentic domain (${harmony.contentDomain}) without morphing or chimeric artifacts.
+Recommended concept structures: ${harmony.suggestedConceptTitles.join(', ')}.\n` 
+        : '';
     
     const prompt = `
       TASK: Create 4 completely different infographic concepts for "${topic}".
@@ -164,6 +184,7 @@ export const generateInfographicConcepts = async (topic: string, options: Genera
       Target: ${options.targetAudience}
       Tone: ${options.tone}
       Complexity: ${options.visualComplexity || 'ultra-detailed'}
+      ${crossDomainGuidance}
 
       The infographics MUST visually represent the provided data points using highly creative charts, callouts, and thematic objects.
       Each concept should have a unique layout (${options.layout}).
@@ -226,6 +247,25 @@ export const generateInfographicImage = async (prompt: string, stylePrompt: stri
         ? "Ultra-technical schematic style, microscopic detail, dense data visualizations, complex HUD elements."
         : "Clean, standard professional layout, high readability, balanced white space.";
 
+    // Cross-Domain Harmonization & Anti-Morphing Guard
+    const effectivePreset = options.stylePreset || 
+        STYLE_PRESETS.find(s => s.promptSuffix === stylePrompt || s.name === options.stylePresetName) || 
+        { id: 'custom', name: options.stylePresetName || 'Active Style', promptSuffix: stylePrompt, category: 'Custom' };
+
+    const harmony = DomainHarmonizer.harmonize({
+        topic: prompt,
+        stylePreset: effectivePreset,
+        options
+    });
+
+    const finalStylePrompt = harmony.isIntertwined ? harmony.harmonizedStylePrompt : stylePrompt;
+    const finalPositive = harmony.isIntertwined 
+        ? `${harmony.adaptedPositivePrompt}, ${options.positivePrompt || ''}` 
+        : (options.positivePrompt || 'absolute masterpiece, one-of-a-kind, incredible objects, breathtaking themes, 8k, sharp focus, highly detailed, dense visual information, creative data visualization, beautiful typography');
+    const finalNegative = harmony.isIntertwined 
+        ? `${harmony.strictNegativePrompt}, ${options.negativePrompt || ''}` 
+        : (options.negativePrompt || 'blurry, low quality, artifacts, boring, plain, sparse, unreadable text, generic');
+
     const finalPrompt = `
       ${prompt}
       
@@ -233,11 +273,11 @@ export const generateInfographicImage = async (prompt: string, stylePrompt: stri
       
       STRICT REQUIREMENT: Visually render exact numbers and key labels directly into the image. Bold typography, creative charts, seamless visual integration.
       TEXT CONSTRAINT: Minimal text. Use ONLY large, bold, readable labels, short bullet points, and big data numbers. No dense paragraphs.
-      VISUAL STYLE: ${stylePrompt}
+      VISUAL STYLE: ${finalStylePrompt}
       COMPLEXITY: ${complexityMod}
-      ENHANCEMENT: Masterpiece infographic graphic, incredible details, breathtaking themes, award-winning design, 8k resolution, crisp vector style and sharp focus.
-      ${options.positivePrompt || 'absolute masterpiece, one-of-a-kind, incredible objects, breathtaking themes, 8k, sharp focus, highly detailed, dense visual information, creative data visualization, beautiful typography'}
-      NEGATIVE: ${options.negativePrompt || 'blurry, low quality, artifacts, boring, plain, sparse, unreadable text, generic'}
+      ENHANCEMENT: Masterpiece infographic graphic, incredible details, breathtaking themes, award-winning design, 8k resolution, sharp focus.
+      ${finalPositive}
+      NEGATIVE: ${finalNegative}
     `;
 
     if (useOpenAI) {
@@ -535,5 +575,20 @@ export const generateInfographicsFromFile = async (file: File, options: Generati
 };
 
 export const generateInfographicsFromArticle = async (text: string, options: GenerationOptions) => {
-    return await generateInfographicConcepts(text, options);
+    const effectivePreset = options.stylePreset || 
+        STYLE_PRESETS.find(s => s.name === options.stylePresetName || s.promptSuffix === options.stylePromptSuffix) || 
+        STYLE_PRESETS[0];
+
+    const harmony = DomainHarmonizer.harmonize({
+        topic: text.slice(0, 150),
+        textContent: text,
+        stylePreset: effectivePreset,
+        options
+    });
+
+    const articleContext = harmony.isIntertwined && harmony.styleArchetype === 'sports_broadcast'
+        ? `ARTICLE TEXT FOR COMPREHENSIVE OVERVIEW:\n${text}\n\nSPECIAL DIRECTIVE: Intertwine this ${harmony.contentDomain} article into an elite ESPN Primetime / Sports Analyst broadcast overview. Extract head-to-head architectural comparisons, benchmark telemetry, and hard numbers, framing them with Tale of the Tape and Scorebug concepts without morphing athletes or sports balls onto technology.`
+        : `ARTICLE TEXT:\n${text}`;
+
+    return await generateInfographicConcepts(articleContext, options);
 };

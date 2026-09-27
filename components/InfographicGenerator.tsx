@@ -11,6 +11,7 @@ import { Spinner } from './common/Spinner';
 import { ImageWithActions } from './ImageWithActions';
 import { ZenLogo } from './common/ZenLogo';
 import { cn } from '../lib/utils';
+import { DomainHarmonizer } from '../services/domainHarmonizer';
 
 const ImageModal: React.FC<{ src: string | null; onClose: () => void }> = ({ src, onClose }) => {
     if (!src) return null;
@@ -147,6 +148,31 @@ export const InfographicGenerator: React.FC<InfographicGeneratorProps> = ({
         return STYLE_PRESETS.filter(s => s.category === styleCategory);
     }, [styleCategory]);
 
+    const currentHarmony = useMemo(() => {
+        if (!selectedStyles[0]) return null;
+        return DomainHarmonizer.harmonize({
+            topic: sourceInput,
+            stylePreset: selectedStyles[0],
+            options: advancedOptions
+        });
+    }, [sourceInput, selectedStyles, advancedOptions]);
+
+    const showcaseTopics = useMemo(() => DomainHarmonizer.getShowcaseTopics(), []);
+
+    const handleSelectShowcase = (item: typeof showcaseTopics[0]) => {
+        setSourceInput(item.topic);
+        setInputMode('topic');
+        const matched = STYLE_PRESETS.find(s => s.id === item.styleId);
+        if (matched) {
+            setSelectedStyles([matched]);
+        }
+        setAdvancedOptions(prev => ({
+            ...prev,
+            dataEntries: item.dataEntries
+        }));
+        toast.success(`Loaded cross-domain synthesis: ${item.title}`);
+    };
+
     const handleConnectKey = async () => {
         if (onOpenSettings) {
             onOpenSettings();
@@ -195,8 +221,14 @@ export const InfographicGenerator: React.FC<InfographicGeneratorProps> = ({
         });
 
         const stylePrompt = selectedStyles.map(s => s.promptSuffix).join(' ');
+        const options: GenerationOptions = {
+            ...advancedOptions,
+            stylePreset: selectedStyles[0],
+            stylePresetName: selectedStyles[0]?.name,
+            stylePromptSuffix: selectedStyles[0]?.promptSuffix
+        };
         try {
-            const urls = await aiService.generateInfographicImage(plan.imagePrompt, stylePrompt, advancedOptions);
+            const urls = await aiService.generateInfographicImage(plan.imagePrompt, stylePrompt, options);
             const imagesForPlan: GeneratedImage[] = urls.map((url, j) => ({
                 id: j, url, isAnalyzing: true, flawSuggestions: [], isDetectingText: true, detectedText: [],
             }));
@@ -264,7 +296,12 @@ export const InfographicGenerator: React.FC<InfographicGeneratorProps> = ({
 
         try {
             let conceptPlans: InfographicContent[] = [];
-            const options = { ...advancedOptions };
+            const options: GenerationOptions = { 
+                ...advancedOptions,
+                stylePreset: selectedStyles[0],
+                stylePresetName: selectedStyles[0]?.name,
+                stylePromptSuffix: selectedStyles[0]?.promptSuffix
+            };
 
             if (inputMode === 'app-screenshot') {
                 // 1. Capture screenshots
@@ -472,6 +509,61 @@ export const InfographicGenerator: React.FC<InfographicGeneratorProps> = ({
                         </button>
                     )}
                 </div>
+
+                {/* Cross-Domain Style Intertwiner Showcase Chips */}
+                <div className="p-4 rounded-3xl bg-gradient-to-r from-blue-950/40 via-purple-950/30 to-slate-900/50 border border-white/10 space-y-3 shadow-inner">
+                    <div className="flex flex-wrap items-center justify-between gap-2">
+                        <div className="flex items-center gap-2">
+                            <span className="p-1.5 rounded-xl bg-blue-500/20 text-blue-400 border border-blue-500/30">
+                                <Icon name="sparkles" className="h-4 w-4" />
+                            </span>
+                            <span className="text-xs font-black tracking-wider uppercase text-white">
+                                Cross-Domain Style Intertwiner
+                            </span>
+                            <span className="text-[10px] font-bold px-2.5 py-0.5 rounded-full bg-emerald-500/20 text-emerald-400 border border-emerald-500/30">
+                                0% Morphing Guarantee
+                            </span>
+                        </div>
+                        <span className="text-[11px] text-slate-400 font-semibold hidden sm:inline-block">
+                            Synthesize Technology & Science in ESPN Broadcast HUDs or Gameday in Technical Blueprints
+                        </span>
+                    </div>
+
+                    <div className="flex gap-2 overflow-x-auto pb-1 scrollbar-none">
+                        {showcaseTopics.map((sc, idx) => (
+                            <button
+                                key={idx}
+                                type="button"
+                                onClick={() => handleSelectShowcase(sc)}
+                                className="px-3.5 py-2.5 rounded-2xl bg-white/5 hover:bg-white/10 border border-white/10 text-xs font-bold text-slate-300 hover:text-white flex items-center gap-2 transition-all whitespace-nowrap active:scale-95 group shrink-0"
+                            >
+                                <span className="font-extrabold group-hover:text-blue-400 transition-colors">{sc.tag}</span>
+                                <span className="text-[11px] text-slate-400 font-medium truncate max-w-[190px]">{sc.title}</span>
+                            </button>
+                        ))}
+                    </div>
+                </div>
+
+                {/* Live Domain Harmonization Status Indicator */}
+                {currentHarmony && currentHarmony.isIntertwined && (
+                    <motion.div
+                        initial={{ opacity: 0, y: -6 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        className="p-4 rounded-2xl bg-gradient-to-r from-blue-950/70 via-purple-950/50 to-slate-900 border border-blue-500/40 space-y-2 shadow-lg"
+                    >
+                        <div className="flex flex-wrap items-center justify-between gap-3 text-xs">
+                            <div className="flex items-center gap-2.5">
+                                <span className="w-2.5 h-2.5 rounded-full bg-cyan-400 animate-pulse shrink-0" />
+                                <span className="font-black text-white text-sm">{currentHarmony.fusionHeadline}</span>
+                            </div>
+                            <span className="px-2.5 py-0.5 rounded-full bg-emerald-500/20 border border-emerald-500/30 text-emerald-300 font-black uppercase text-[10px]">
+                                🛡️ Anti-Morphing Active
+                            </span>
+                        </div>
+                        <p className="text-xs text-slate-300">{currentHarmony.fusionDescription}</p>
+                        <p className="text-[11px] text-slate-400 italic">{currentHarmony.antiMorphingDirectives}</p>
+                    </motion.div>
+                )}
 
                 <div className="relative">
                     {inputMode === 'file' ? (
