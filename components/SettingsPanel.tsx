@@ -274,7 +274,7 @@ export const SettingsPanel: React.FC<SettingsPanelProps> = ({ isOpen, onClose, c
                     <ZenLogo size={56} engraved glow customLogoUrl={customLogoUrl} />
                     <div className="flex flex-col">
                         <span className="text-sm font-black text-white tracking-wide">
-                            {customLogoUrl ? 'Custom Organization Logo' : 'Official ZEN AI Co. Emblem'}
+                            {customLogoUrl ? 'Custom Organization Logo' : 'Official Studio Hallmark Emblem'}
                         </span>
                         <span className="text-[11px] text-slate-400 font-mono">
                             {customLogoUrl ? 'User Asset Loaded' : '1024x1024 Master Asset · zen-brand-logo.png'}

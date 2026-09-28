@@ -127,17 +127,18 @@ async function startServer() {
         messages: [
           {
             role: "system",
-            content: `You are an expert data visualizer and infographic conceptualizer. You must reply strictly in valid JSON matching this schema:
+            content: `You are a world-class data visualizer and infographic conceptualizer. You must reply strictly in valid JSON matching this schema:
 {
   "infographics": [
     {
-      "title": "Short Title",
-      "points": ["Point 1", "Point 2", "Point 3"],
-      "imagePrompt": "Detailed visual description of infographic visual"
+      "title": "Short High-Impact Title",
+      "points": ["Specific Point 1 with exact numbers/layer names", "Specific Point 2", "Specific Point 3"],
+      "imagePrompt": "Detailed visual description of infographic layout, exact layer titles, numbers, and visual hierarchy"
     }
   ]
 }
-Generate exactly 4 unique infographic concepts.`
+Generate exactly 4 unique infographic concepts.
+STRICT CONTENT ADHERENCE: Ground every single concept directly in the user's provided text, article layers, and real metrics. Never invent generic corporate placeholder metrics (such as 'Program Completion Rate' or 'Customer Satisfaction') unless they are explicitly present in the input text.`
           },
           { role: "user", content: prompt }
         ],

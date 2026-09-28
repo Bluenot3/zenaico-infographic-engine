@@ -158,7 +158,7 @@ const App: React.FC = () => {
                 Synthesize Publication-Grade Visuals
               </h1>
               <p className="mt-2 text-sm sm:text-base md:text-lg text-slate-400 font-medium tracking-wide max-w-2xl mx-auto px-4">
-                Powered by OpenAI GPT-Image-2 and multimodal models with authentic ZEN AI Co. verification hallmark engraving.
+                Powered by Google Gemini 3 Pro multimodal AI with authentic publication-ready studio verification engraving.
               </p>
             </motion.div>
           )}

@@ -57,17 +57,17 @@ export const HistoryView: React.FC<HistoryViewProps> = ({
   const handleDownload = async (item: HistoryItem, engrave: boolean) => {
     setIsProcessing(`download-${item.id}-${engrave}`);
     const toastId = toast.loading(
-      engrave ? 'Applying official ZEN AI Co. engraving...' : 'Preparing high-res download...'
+      engrave ? 'Applying official studio engraving...' : 'Preparing high-res download...'
     );
 
     try {
-      const filename = `zen_infographic_${item.title.replace(/[^a-zA-Z0-9]/g, '_').toLowerCase()}_${engrave ? 'engraved' : 'raw'}.png`;
+      const filename = `infographic_${item.title.replace(/[^a-zA-Z0-9]/g, '_').toLowerCase()}_${engrave ? 'engraved' : 'raw'}.png`;
       await downloadInfographicImage(item.imageUrl, filename, {
         engrave,
         model: item.model,
         timestamp: item.timestamp,
       });
-      toast.success(engrave ? 'Downloaded with ZEN AI Co. engraving!' : 'Download complete!', {
+      toast.success(engrave ? 'Downloaded with studio hallmark engraving!' : 'Download complete!', {
         id: toastId,
       });
     } catch (err: any) {
@@ -131,7 +131,7 @@ export const HistoryView: React.FC<HistoryViewProps> = ({
               </span>
             </div>
             <p className="text-sm text-slate-400 mt-1 flex items-center gap-2">
-              <span>ZEN AI Co. Certified Archive</span>
+              <span>Studio Certified Archive</span>
               <span aria-hidden="true">·</span>
               <span>Re-download with authentic metallic engraving</span>
             </p>
@@ -260,7 +260,7 @@ export const HistoryView: React.FC<HistoryViewProps> = ({
                   <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-xl bg-slate-950/85 backdrop-blur-md border border-white/15 shadow-lg">
                     <ZenLogo size={20} engraved />
                     <span className="text-[10px] font-black uppercase tracking-wider text-white">
-                      ZEN AI Co. Engraved
+                      Studio Engraved
                     </span>
                   </div>
                   <span className="text-[10px] font-bold uppercase tracking-wider px-2 py-1 rounded-lg bg-black/60 backdrop-blur-sm text-slate-300 border border-white/10">
@@ -407,7 +407,7 @@ export const HistoryView: React.FC<HistoryViewProps> = ({
                   <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-xl bg-white/10 border border-white/10">
                     <ZenLogo size={20} engraved />
                     <span className="text-[11px] font-black text-white uppercase tracking-wider">
-                      ZEN AI Co. Master Asset
+                      Studio Master Asset
                     </span>
                   </div>
                 </div>
@@ -464,7 +464,7 @@ export const HistoryView: React.FC<HistoryViewProps> = ({
                     className="w-full py-4 px-6 rounded-2xl bg-gradient-to-r from-blue-600 via-indigo-600 to-purple-600 hover:from-blue-500 hover:to-indigo-500 text-white font-black text-xs uppercase tracking-widest transition-all shadow-xl shadow-blue-600/30 flex items-center justify-center gap-3 active:scale-95"
                   >
                     <Icon name="stamp" className="h-5 w-5" />
-                    <span>Download with ZEN AI Co. Engraving</span>
+                    <span>Download with Studio Hallmark Engraving</span>
                   </button>
 
                   <div className="flex gap-3">

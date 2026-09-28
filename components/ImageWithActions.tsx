@@ -41,16 +41,16 @@ export const ImageWithActions: React.FC<ImageWithActionsProps> = ({
 
   const handleDownload = async (engrave: boolean = true) => {
     setIsProcessing(true);
-    const toastId = toast.loading(engrave ? "Applying ZEN AI Co. engraved hallmark..." : "Downloading visual...");
+    const toastId = toast.loading(engrave ? "Applying studio engraved hallmark..." : "Downloading visual...");
     try {
-      const filename = `zen_infographic_${Date.now()}_${engrave ? 'engraved' : 'raw'}.png`;
-      await downloadInfographicImage(image.url, filename, { engrave, model: 'gpt-image-2', timestamp: Date.now() });
-      toast.success(engrave ? "Downloaded with ZEN AI Co. engraving!" : "Download complete!", { id: toastId });
+      const filename = `infographic_${Date.now()}_${engrave ? 'engraved' : 'raw'}.png`;
+      await downloadInfographicImage(image.url, filename, { engrave, model: 'gemini-3-pro-image', timestamp: Date.now() });
+      toast.success(engrave ? "Downloaded with studio hallmark engraving!" : "Download complete!", { id: toastId });
     } catch (err: any) {
       console.error('Download failed', err);
       const link = document.createElement('a');
       link.href = image.url;
-      link.download = `zen_infographic_${Date.now()}.png`;
+      link.download = `infographic_${Date.now()}.png`;
       link.click();
       toast.success("Downloaded visual", { id: toastId });
     } finally {
@@ -153,12 +153,12 @@ export const ImageWithActions: React.FC<ImageWithActionsProps> = ({
             animate={{ opacity: 1 }}
           />
           
-          {/* ZEN AI Co. Engraved Insignia Stamp Overlay */}
+          {/* Verified Insignia Stamp Overlay */}
           <div className="absolute top-4 left-4 z-10 pointer-events-none">
             <div className="flex items-center gap-2 px-3 py-1.5 rounded-2xl bg-black/75 backdrop-blur-md border border-white/15 shadow-xl">
               <ZenLogo size={20} engraved />
               <span className="text-[10px] font-black tracking-wider uppercase text-white">
-                ZEN AI Co. Verified
+                Studio 4K Verified
               </span>
             </div>
           </div>

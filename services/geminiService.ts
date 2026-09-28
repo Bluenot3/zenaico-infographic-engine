@@ -9,22 +9,22 @@ const getApiSettings = (): ApiSettings => {
         if (settings) {
             const parsed = JSON.parse(settings);
             return {
-                provider: parsed.provider || 'openai',
+                provider: parsed.provider || 'google',
                 openaiApiKey: parsed.openaiApiKey || '',
                 googleApiKey: parsed.googleApiKey || '',
-                imageModel: parsed.imageModel || 'gpt-image-2',
-                textModel: parsed.textModel || 'gpt-4o'
+                imageModel: parsed.imageModel || 'gemini-3-pro-image',
+                textModel: parsed.textModel || 'gemini-3.1-pro-preview'
             };
         }
     } catch (error) {
         console.error("Failed to parse API settings from localStorage", error);
     }
     return {
-        provider: 'openai',
+        provider: 'google',
         openaiApiKey: '',
         googleApiKey: '',
-        imageModel: 'gpt-image-2',
-        textModel: 'gpt-4o'
+        imageModel: 'gemini-3-pro-image',
+        textModel: 'gemini-3.1-pro-preview'
     };
 };
 
@@ -91,7 +91,8 @@ const articleAnalysisSchema = {
 
 const sanitizeText = (text: string): string => {
     if (!text) return text;
-    if (/georgia|uga|bulldogs/i.test(text)) {
+    // Only apply sports roster corrections if Georgia football is explicitly mentioned
+    if (/\b(georgia|bulldogs|uga)\b/i.test(text) && /\b(quarterback|qb|carson|beck)\b/i.test(text)) {
         return text
             .replace(/Carson\s+Beck\s*#\d*/gi, 'Gunner Stockton #14')
             .replace(/Carson\s+Beck/gi, 'Gunner Stockton')
@@ -110,7 +111,11 @@ const sanitizeInfographics = (items: InfographicContent[]): InfographicContent[]
 
 export const suggestDataPoints = async (topic: string): Promise<string[]> => {
     const settings = getApiSettings();
-    const prompt = `Find 3 high-impact, specific numerical data points or statistics for the topic "${topic}". Output as JSON object with key "suggestedData" containing an array of strings. Accuracy mandate: Ensure data is grounded in 2026 reality (e.g. for Georgia Bulldogs, quarterback is Gunner Stockton #14; Carson Beck departed Georgia over 2 years ago).`;
+    const isSportsTopic = /\b(football|quarterback|nfl|ncaa|georgia|game|touchdown)\b/i.test(topic);
+    const sportsAccuracyClause = isSportsTopic 
+        ? " Accuracy mandate: Grounded in active 2026 sports rosters (e.g. for Georgia Bulldogs, starting QB is Gunner Stockton #14)." 
+        : "";
+    const prompt = `Find 3 to 5 high-impact, specific numerical data points, architectural specifications, or key statistics for the topic "${topic}". Output as JSON object with key "suggestedData" containing an array of strings.${sportsAccuracyClause} Ensure metrics are authentic, specific, and impactful for data visualization.`;
 
     const useOpenAI = settings.provider === 'openai' || (settings.provider === 'hybrid' && (settings.openaiApiKey || process.env.OPENAI_API_KEY));
 
@@ -170,6 +175,10 @@ export const generateInfographicConcepts = async (topic: string, options: Genera
         options
     });
 
+    // Check if topic is a rich multi-section article or stack
+    const articleStructure = DomainHarmonizer.extractArticleStructure(topic);
+    const hasStructuredLayers = articleStructure.sections.length > 0;
+
     const crossDomainGuidance = harmony.isIntertwined 
         ? `\nCROSS-DOMAIN STYLE HARMONY ACTIVATED: ${harmony.fusionHeadline}
 ${harmony.fusionDescription}
@@ -178,7 +187,44 @@ Ensure the 4 infographic concepts creatively translate the visual archetype (${h
 Recommended concept structures: ${harmony.suggestedConceptTitles.join(', ')}.\n` 
         : '';
     
-    const prompt = `
+    let prompt: string;
+    if (hasStructuredLayers) {
+        prompt = `
+      TASK: Create 4 completely different publication-ready infographic concepts for the article/stack: "${articleStructure.coreTitle}".
+      
+      CORE ARTICLE THESIS:
+      ${articleStructure.thesis}
+      
+      EXTRACTED STRUCTURED TIERS / LAYERS (${articleStructure.sections.length} Tiers):
+      ${articleStructure.sections.map(s => `* Layer ${s.number}: ${s.heading} -> Key principle: ${s.summary}${s.metrics.length > 0 ? ` (Metrics: ${s.metrics.join(', ')})` : ''}`).join('\n')}
+      
+      REAL METRICS TO HIGHLIGHT:
+      ${[...validData, ...articleStructure.keyMetrics].filter(Boolean).join(', ')}
+      
+      VISUAL STYLE: ${effectivePreset.name} (${effectivePreset.promptSuffix})
+      TARGET AUDIENCE: ${options.targetAudience}
+      TONE: ${options.tone}
+      COMPLEXITY: ${options.visualComplexity || 'ultra-detailed'}
+      ${crossDomainGuidance}
+
+      MANDATORY 4 CONCEPT BLUEPRINTS TO GENERATE:
+      1. Concept 1 (Complete Stack Hierarchy): Visualizes all ${articleStructure.sections.length} layers in an interconnected vertical architecture diagram with status indicators, boundary gates, and execution layers.
+      2. Concept 2 (Bounded Autonomy & Governance Matrix): Deep-dive comparison matrix contrasting unrestricted machine autonomy with bounded autonomy, emphasizing transaction thresholds, spending mandates ($50 / $500 / $5,000), and permission surfaces.
+      3. Concept 3 (Accountability & Recourse Telemetry): Focuses on the institutional bridge (Machine Identity, Audit Trails, Monitoring Circuits, Insurance Liability, and Human Recourse).
+      4. Concept 4 (${harmony.styleArchetype === 'sports_broadcast' ? 'ESPN Sports Analyst / Tale of the Tape Breakdown' : 'Analytical Telemetry Breakdown'}): An elite analytical overview translating the layers into high-contrast telemetry ribbons, Tale of the Tape comparisons, and executive scoring matrices (Strictly NO athletic balls or turf artifacts).
+
+      CRITICAL CONTENT FIDELITY INSTRUCTIONS:
+      - Strictly ground every concept in the actual article content. NEVER hallucinate generic corporate filler or unrelated KPIs (e.g. do NOT invent "Program Completion Rate").
+      - Each "imagePrompt" MUST explicitly mandate rendering the real layer titles ("1. TRAINING", "2. IDENTITY", ... "10. RECOURSE") and specific numerical limits ($50, $500, $5,000, 900,000 transactions).
+      - Use ONLY concise bullet points and large readable data labels.
+      ${options.excludeElements ? `EXCLUDED ELEMENTS: ${options.excludeElements}` : ''}
+        `.trim();
+    } else {
+        const isSportsTopic = /\b(football|quarterback|nfl|ncaa|georgia|game|touchdown)\b/i.test(topic);
+        const sportsAccuracyClause = isSportsTopic 
+            ? "ACCURACY MANDATE: Grounded in 2026 sports rosters (e.g. for Georgia Bulldogs, starting QB is Gunner Stockton #14)." 
+            : "";
+        prompt = `
       TASK: Create 4 completely different infographic concepts for "${topic}".
       MANDATORY DATA TO INCLUDE: ${validData.join(', ')}
       Target: ${options.targetAudience}
@@ -190,11 +236,12 @@ Recommended concept structures: ${harmony.suggestedConceptTitles.join(', ')}.\n`
       Each concept should have a unique layout (${options.layout}).
       CRITICAL: Ensure the visual concepts are ABSOLUTE MASTERPIECES packed with incredible, one-of-a-kind thematic objects, mind-blowing graphics, and highly creative ways of integrating the stats and facts directly into the visual elements. The design MUST be dense with meaningful, breathtaking details.
       TEXT CONSTRAINT: Keep all text extremely brief. Use ONLY short bullet points, large numbers, and concise labels. DO NOT use paragraphs or long sentences.
-      ACCURACY MANDATE: Grounded in 2026 reality. For sports rosters, use only 100% verified active 2026 players (e.g. Carson Beck departed Georgia Bulldogs over 2 years ago and is in the NFL; Georgia starting QB is Gunner Stockton #14).
+      ${sportsAccuracyClause}
       ${options.excludeElements ? `EXCLUDED ELEMENTS: ${options.excludeElements}` : ''}
-    `;
+        `.trim();
+    }
 
-    const useOpenAI = settings.provider === 'openai' || (settings.provider === 'hybrid' && (settings.openaiApiKey || process.env.OPENAI_API_KEY));
+    const useOpenAI = settings.provider === 'openai' && (settings.openaiApiKey || process.env.OPENAI_API_KEY);
 
     if (useOpenAI) {
         try {
@@ -236,15 +283,15 @@ Recommended concept structures: ${harmony.suggestedConceptTitles.join(', ')}.\n`
 
 export const generateInfographicImage = async (prompt: string, stylePrompt: string, options: GenerationOptions): Promise<string[]> => {
     const settings = getApiSettings();
-    const modelToUse = settings.imageModel || 'gpt-image-2';
+    const modelToUse = settings.imageModel || 'gemini-3-pro-image';
     const isOpenAIModel = modelToUse.startsWith('gpt-image') || modelToUse.startsWith('dall-e');
-    const useOpenAI = settings.provider === 'openai' || (settings.provider === 'hybrid' && (isOpenAIModel || settings.openaiApiKey || process.env.OPENAI_API_KEY)) || isOpenAIModel;
+    const useOpenAI = settings.provider === 'openai' && (isOpenAIModel || settings.openaiApiKey || process.env.OPENAI_API_KEY);
 
     const validData = options.dataEntries.filter(e => e.trim() !== '');
     const dataPrompt = validData.length > 0 ? `CRITICAL TEXT TO RENDER EXACTLY:\n${validData.map(d => `* "${d}"`).join('\n')}` : '';
     
     const complexityMod = options.visualComplexity === 'ultra-detailed' 
-        ? "Ultra-technical schematic style, microscopic detail, dense data visualizations, complex HUD elements."
+        ? "Ultra-technical schematic style, microscopic physical textures, ray-traced lighting, dense data visualizations, complex HUD elements."
         : "Clean, standard professional layout, high readability, balanced white space.";
 
     // Cross-Domain Harmonization & Anti-Morphing Guard
@@ -261,7 +308,7 @@ export const generateInfographicImage = async (prompt: string, stylePrompt: stri
     const finalStylePrompt = harmony.isIntertwined ? harmony.harmonizedStylePrompt : stylePrompt;
     const finalPositive = harmony.isIntertwined 
         ? `${harmony.adaptedPositivePrompt}, ${options.positivePrompt || ''}` 
-        : (options.positivePrompt || 'absolute masterpiece, one-of-a-kind, incredible objects, breathtaking themes, 8k, sharp focus, highly detailed, dense visual information, creative data visualization, beautiful typography');
+        : (options.positivePrompt || 'absolute masterpiece, one-of-a-kind, incredible objects, breathtaking textures, 8k, sharp focus, highly detailed, dense visual information, creative data visualization, beautiful typography');
     const finalNegative = harmony.isIntertwined 
         ? `${harmony.strictNegativePrompt}, ${options.negativePrompt || ''}` 
         : (options.negativePrompt || 'blurry, low quality, artifacts, boring, plain, sparse, unreadable text, generic');
@@ -275,10 +322,10 @@ export const generateInfographicImage = async (prompt: string, stylePrompt: stri
       TEXT CONSTRAINT: Minimal text. Use ONLY large, bold, readable labels, short bullet points, and big data numbers. No dense paragraphs.
       VISUAL STYLE: ${finalStylePrompt}
       COMPLEXITY: ${complexityMod}
-      ENHANCEMENT: Masterpiece infographic graphic, incredible details, breathtaking themes, award-winning design, 8k resolution, sharp focus.
+      ENHANCEMENT: Masterpiece infographic visual, state-of-the-art lab quality, award-winning graphic design, 8k resolution, razor-sharp focus, photorealistic textures.
       ${finalPositive}
       NEGATIVE: ${finalNegative}
-    `;
+    `.trim();
 
     if (useOpenAI) {
         try {
@@ -287,7 +334,7 @@ export const generateInfographicImage = async (prompt: string, stylePrompt: stri
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({
                     prompt: finalPrompt,
-                    model: isOpenAIModel ? modelToUse : 'gpt-image-2',
+                    model: isOpenAIModel ? modelToUse : 'dall-e-3',
                     apiKey: settings.openaiApiKey,
                     aspectRatio: options.aspectRatio
                 })
@@ -318,7 +365,7 @@ export const generateInfographicImage = async (prompt: string, stylePrompt: stri
         const response = await retryWithBackoff(async () => {
             const ai = getGoogleAI();
             return await ai.models.generateContent({
-                model: 'gemini-3-pro-image-preview',
+                model: 'gemini-3-pro-image',
                 contents: { parts: [{ text: finalPrompt }] },
                 config: { 
                     responseModalities: [Modality.IMAGE], 
@@ -329,10 +376,11 @@ export const generateInfographicImage = async (prompt: string, stylePrompt: stri
         const part = response.candidates?.[0]?.content?.parts?.find(p => p.inlineData);
         if (part?.inlineData) imageUrls.push(`data:${part.inlineData.mimeType};base64,${part.inlineData.data}`);
     } catch (e: any) {
+        console.warn("gemini-3-pro-image 4K failed, trying gemini-3.1-flash-image fallback...", e);
         const flashResponse = await retryWithBackoff(async () => {
             const ai = getGoogleAI();
             return await ai.models.generateContent({
-                model: 'gemini-2.5-flash-image',
+                model: 'gemini-3.1-flash-image',
                 contents: { parts: [{ text: finalPrompt }] },
                 config: { 
                     responseModalities: [Modality.IMAGE], 
@@ -518,7 +566,7 @@ export const enhanceScreenshot = async (screenshotBase64: string, options: Gener
     try {
         const ai = getGoogleAI();
         const response = await ai.models.generateContent({
-            model: 'gemini-3-pro-image-preview',
+            model: 'gemini-3-pro-image',
             contents: { 
                 parts: [
                     { inlineData: { mimeType: 'image/jpeg', data: screenshotBase64.split(',')[1] } }, 
@@ -551,7 +599,7 @@ export const sendMessage = async (history: ChatMessage[]) => {
             });
             if (resp.ok) {
                 const data = await resp.json();
-                return { text: data.text || "I am your OpenAI-powered ZEN Assistant." };
+                return { text: data.text || "I am your Infographic Studio Assistant." };
             }
         } catch (err) {
             console.warn("OpenAI chat failed, falling back to Gemini...", err);

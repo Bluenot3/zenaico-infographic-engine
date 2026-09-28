@@ -43,7 +43,7 @@ export class DomainHarmonizer {
       return 'sports';
     }
 
-    // 2. Technology & Hardware detection
+    // 2. Technology, AI & Software Architecture detection
     const techKeywords = [
       'gpu', 'cpu', 'semiconductor', 'nvidia', 'blackwell', 'b200', 'amd', 'mi300', 
       'intel', 'tpu', 'transistor', 'quantum computing', 'qubit', 'microchip', 
@@ -53,7 +53,14 @@ export class DomainHarmonizer {
       'bci', 'brain-computer interface', 'neuralink', 'lithography', 'asml', 'tflops', 'pflops',
       'supercomputer', 'exascale', 'fpga', 'asic', 'hbm3', 'hbm3e', 'pcie', 'nvlink',
       'cloud computing', 'datacenter', 'compiler', 'autonomous vehicle', 'lidar',
-      'solid state battery', 'photonics', 'optics', 'cryogenic', 'server architecture'
+      'solid state battery', 'photonics', 'optics', 'cryogenic', 'server architecture',
+      // AI Agency, Governance, & Autonomous Systems keywords
+      'agent', 'agents', 'machine agency', 'license-to-act', 'frontier model', 'intelligence', 
+      'training', 'credentials', 'autonomy', 'bounded autonomy', 'governance', 'infrastructure', 
+      'system architecture', 'model stack', 'deployment', 'observability', 'monitoring', 
+      'recourse', 'liability', 'economic constitution', 'spending mandate', 'machine identity',
+      'audit trail', 'context isolation', 'operating history', 'permission surface',
+      'algorithmic', 'prompt engineering', 'evaluations', 'benchmark', 'api', 'tokens', 'ai '
     ];
     if (techKeywords.some(kw => combined.includes(kw))) {
       return 'technology';
@@ -328,6 +335,78 @@ export class DomainHarmonizer {
   }
 
   /**
+   * Deep structural parser for long-form articles, whitepapers, and multi-layer stacks.
+   * Extracts numbered layers/sections, key thresholds, analogies, and the core architectural thesis.
+   */
+  public static extractArticleStructure(text: string): {
+    coreTitle: string;
+    sections: { number: string; heading: string; summary: string; metrics: string[] }[];
+    keyMetrics: string[];
+    thesis: string;
+  } {
+    if (!text || text.trim().length === 0) {
+      return { coreTitle: '', sections: [], keyMetrics: [], thesis: '' };
+    }
+
+    // Try finding numbered headings like "1. TRAINING — Can the machine...", "2. IDENTITY", etc.
+    const sectionRegex = /(?:^|\n)\s*(\d+)[\.\)]\s*([A-Z0-9\s/]+?)\s*(?:[—–\-:]\s*([^\n]+))?(?=\n|$)/g;
+    const sections: { number: string; heading: string; summary: string; metrics: string[] }[] = [];
+    const keyMetrics: string[] = [];
+
+    let match;
+    let lastIndex = 0;
+    const matches: { index: number; num: string; title: string; subtitle: string }[] = [];
+
+    while ((match = sectionRegex.exec(text)) !== null) {
+      matches.push({
+        index: match.index,
+        num: match[1],
+        title: (match[2] || '').trim(),
+        subtitle: (match[3] || '').trim()
+      });
+    }
+
+    for (let i = 0; i < matches.length; i++) {
+      const curr = matches[i];
+      const nextIndex = i + 1 < matches.length ? matches[i + 1].index : text.length;
+      const body = text.slice(curr.index, nextIndex).trim();
+
+      // Extract specific numbers/metrics from the body
+      const metricsInBody: string[] = [];
+      const numMatches = body.match(/\$[\d,]+|\b\d{1,3}(?:,\d{3})*(?:\.\d+)?(?:%|ms|ns|s|h|k|m|b|pflops|tflops|hours|miles|transactions)?\b/gi) || [];
+      numMatches.slice(0, 3).forEach(m => {
+        if (!metricsInBody.includes(m) && m.length > 1) {
+          metricsInBody.push(m);
+          if (!keyMetrics.includes(m)) keyMetrics.push(m);
+        }
+      });
+
+      const firstLines = body.split('\n').filter(l => l.trim().length > 0).slice(1, 3).join(' ');
+      sections.push({
+        number: curr.num,
+        heading: `${curr.title}${curr.subtitle ? ` — ${curr.subtitle}` : ''}`,
+        summary: firstLines.slice(0, 140),
+        metrics: metricsInBody
+      });
+    }
+
+    // Extract core title / thesis
+    const titleMatch = text.match(/(?:The\s+[\w\s\-]+Stack|[\w\s\-]+Architecture|[\w\s\-]+Framework)/i);
+    const coreTitle = titleMatch ? titleMatch[0].trim() : (sections.length > 0 ? `The ${sections.length}-Layer Machine Architecture Stack` : text.slice(0, 80).split('\n')[0]);
+
+    // Check for concluding thesis (e.g. "Intelligence determines what a machine could do. The License-to-Act Stack determines what civilization will actually let it do.")
+    const thesisMatch = text.match(/Intelligence determines.*|The License-to-Act Stack.*|[^\n]+\bbridge between\b[^\n]+/i);
+    const thesis = thesisMatch ? thesisMatch[0].trim() : 'Transforming vague autonomy into bounded, accountable institutional agency.';
+
+    return {
+      coreTitle,
+      sections,
+      keyMetrics,
+      thesis
+    };
+  }
+
+  /**
    * Quick showcase examples that prove the power of cross-domain intertwining.
    */
   public static getShowcaseTopics(): {
@@ -337,8 +416,60 @@ export class DomainHarmonizer {
     category: string;
     tag: string;
     dataEntries: string[];
+    fullArticleText?: string;
   }[] {
     return [
+      {
+        title: "The License-to-Act Stack (10 Layers)",
+        topic: "The 10-Layer License-to-Act Stack: Institutional Bridge Between Machine Intelligence and Machine Agency",
+        styleId: "espn_tech_breakdown",
+        category: "AI Governance in Sports HUD",
+        tag: "⚡ 10-Layer Stack × ESPN Analyst HUD",
+        dataEntries: [
+          "1. TRAINING: Capability vs Permission (Simulated Workplaces)",
+          "2. IDENTITY: Machine Identity vs Forensic Guesswork",
+          "3. CONTEXT: Governed Resource vs Unlimited Memory",
+          "4. CREDENTIALS: Specialized Access vs Public Consumer",
+          "5. AUTHORITY: Bounded Autonomy ($100 Auto vs $10,000 Approval)",
+          "6. PAYMENT: Economic Constitutions ($50 / $500 / $5,000 Mandate)",
+          "7. MONITORING: Real-Time Intervention vs Passive Observability",
+          "8. OPERATING HISTORY: 900,000 Verified Transactions / Audit Trails",
+          "9. INSURANCE: Priced Financial Liability & Containment",
+          "10. RECOURSE: Recovery, Revocation & Human Restitution"
+        ],
+        fullArticleText: `1. TRAINING — Can the machine actually perform the work?
+Before a human pilot flies passengers, a surgeon operates independently or an electrician works on critical infrastructure, society demands evidence of competence.
+Machines will increasingly need equivalents. Benchmarks alone will not be enough. Training establishes capability. It does not establish permission.
+
+2. IDENTITY — Which machine is acting?
+Once thousands of agents operate simultaneously, “the AI did it” becomes almost meaningless. Which agent? Which version? Running for which company? On whose behalf? Using which configuration? Without machine identity, accountability becomes forensic guesswork.
+
+3. CONTEXT — What information is this system permitted to know?
+An employee does not automatically receive access to every record in a company simply because the information might help them perform a task. Context therefore becomes a governed resource rather than an unlimited memory pool.
+
+4. CREDENTIALS — What proves that this machine qualifies for specialized access?
+We already separate ordinary public access from professional access: Doctors, Lawyers, Scientists, Pilots, Cybersecurity researchers. AI is beginning to encounter the same architecture. The intelligence can be similar; the credentials change what it is allowed to touch.
+
+5. AUTHORITY — What may it actually do?
+Authority turns vague autonomy into bounded autonomy. An agent might be allowed to draft a payment but not submit it; schedule a meeting but not cancel one; prepare a software deployment but not push to production; move $100 automatically but require approval for $10,000.
+
+6. PAYMENT — How much economic power may the machine control?
+Once agents can buy software, procure services, pay invoices, or trade assets, financial authority becomes part of machine architecture. A useful agent operates under programmable economic constitutions: $50 without approval, $500 within approved vendor list, $5,000 after human confirmation.
+
+7. MONITORING — Can anyone see what it is doing while it is happening?
+Detection alone is not enough. A monitoring system must answer: What action occurred? Did the machine cross a boundary? Should access be reduced or terminated automatically? A system that records dangerous behavior without quick intervention has observability without control.
+
+8. OPERATING HISTORY — How has this machine behaved over time?
+Imagine an agent that has completed 900,000 transactions without exceeding its mandate, or a robot with 80,000 incident-free operating hours. At scale, this history becomes economically meaningful. A machine's past behavior affects the authority it receives in the future.
+
+9. INSURANCE — Who is willing to put capital behind the machine's behavior?
+Insurance converts abstract safety claims into priced financial exposure. The question stops being merely "Is this AI impressive?" It becomes "Will somebody accept financial liability for what it does?"
+
+10. RECOURSE — What happens after the machine is wrong?
+Can the transaction be reversed? Can access be frozen? Can a robot be stopped? Can an incorrect decision be appealed? Recourse is what separates automation from abdication.
+
+Intelligence determines what a machine could do. The License-to-Act Stack determines what civilization will actually let it do.`
+      },
       {
         title: "NVIDIA B200 vs AMD MI300X",
         topic: "NVIDIA Blackwell B200 vs AMD Instinct MI300X AI Superchips",

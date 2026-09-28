@@ -736,7 +736,7 @@ export const SportsHub: React.FC<SportsHubProps> = ({ onLoadIntoStudio, onOpenSe
           <div className="flex flex-wrap items-center gap-3">
             <span className="px-3.5 py-1 rounded-full bg-gradient-to-r from-red-600/20 to-amber-600/20 border border-red-500/30 text-amber-300 text-xs font-black tracking-wider uppercase flex items-center gap-2">
               <ZenLogo size={14} engraved />
-              <span>ZEN SPORTS INTELLIGENCE ENGINE</span>
+              <span>SPORTS INTELLIGENCE & TELEMETRY ENGINE</span>
             </span>
 
             <span className="px-3 py-1 rounded-full bg-blue-600/20 border border-blue-500/30 text-blue-400 text-xs font-bold">
@@ -1533,7 +1533,7 @@ export const SportsHub: React.FC<SportsHubProps> = ({ onLoadIntoStudio, onOpenSe
                             <div className="flex items-center gap-2 px-3 py-1.5 rounded-2xl bg-black/80 backdrop-blur-md border border-white/20 shadow-xl">
                               <ZenLogo size={20} engraved glow />
                               <span className="text-[10px] font-black tracking-widest text-slate-200 uppercase">
-                                ZEN AI CO. VERIFIED
+                                STUDIO 4K VERIFIED
                               </span>
                             </div>
                           </div>

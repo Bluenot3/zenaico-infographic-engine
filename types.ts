@@ -1,11 +1,13 @@
 
-export type ApiProvider = 'openai' | 'google' | 'hybrid';
+export type ApiProvider = 'openai' | 'google' | 'gemini' | 'hybrid';
 
 export type ImageModelOption = 
   | 'gpt-image-2'
   | 'dall-e-3'
   | 'dall-e-2'
+  | 'gemini-3-pro-image'
   | 'gemini-3-pro-image-preview'
+  | 'gemini-3.1-flash-image'
   | 'gemini-2.5-flash-image';
 
 export type TextModelOption =

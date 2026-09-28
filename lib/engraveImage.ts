@@ -26,6 +26,7 @@ export async function createEngravedInfographic(
     format?: 'image/png' | 'image/jpeg';
     quality?: number;
     customLogoUrl?: string;
+    brandName?: string;
   } = {}
 ): Promise<string> {
   return new Promise(async (resolve) => {
@@ -177,15 +178,18 @@ export async function createEngravedInfographic(
       ctx.save();
       const textX = iconX + iconSize + 12 * scale;
       
-      // Brand Title: ZEN AI Co.
+      // Brand Title: Customizable or Studio Archive
+      const displayBrand = options.brandName || 
+        (typeof localStorage !== 'undefined' ? localStorage.getItem('studio_custom_brand_name') : null) || 
+        'INFOGRAPHIC STUDIO';
       ctx.fillStyle = '#ffffff';
       ctx.font = `900 ${14 * scale}px "Plus Jakarta Sans", system-ui, -apple-system, sans-serif`;
-      ctx.fillText('ZEN AI Co.', textX, y + 24 * scale);
+      ctx.fillText(displayBrand, textX, y + 24 * scale);
 
       // Verification Line
       ctx.fillStyle = 'rgba(147, 197, 253, 0.95)';
       ctx.font = `700 ${8.5 * scale}px "Plus Jakarta Sans", system-ui, -apple-system, sans-serif`;
-      const modelLabel = options.model ? options.model.toUpperCase() : 'GPT-IMAGE-2';
+      const modelLabel = options.model ? options.model.toUpperCase() : 'STUDIO 4K';
       ctx.fillText(`VERIFIED VISUAL · ${modelLabel}`, textX, y + 37 * scale);
 
       // Subtitle / Certificate
@@ -212,7 +216,7 @@ export async function createEngravedInfographic(
 export async function downloadInfographicImage(
   imageUrl: string,
   filename: string,
-  options: { engrave?: boolean; title?: string; model?: string; timestamp?: number; customLogoUrl?: string } = {}
+  options: { engrave?: boolean; title?: string; model?: string; timestamp?: number; customLogoUrl?: string; brandName?: string } = {}
 ) {
   let targetUrl = imageUrl;
   if (options.engrave) {
@@ -227,7 +231,7 @@ export async function downloadInfographicImage(
   // Create temporary link and trigger download
   const link = document.createElement('a');
   link.href = targetUrl;
-  link.download = filename || `zen_infographic_${Date.now()}.png`;
+  link.download = filename || `infographic_${Date.now()}.png`;
   document.body.appendChild(link);
   link.click();
   document.body.removeChild(link);

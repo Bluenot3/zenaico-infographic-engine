@@ -160,8 +160,13 @@ export const InfographicGenerator: React.FC<InfographicGeneratorProps> = ({
     const showcaseTopics = useMemo(() => DomainHarmonizer.getShowcaseTopics(), []);
 
     const handleSelectShowcase = (item: typeof showcaseTopics[0]) => {
-        setSourceInput(item.topic);
-        setInputMode('topic');
+        if (item.fullArticleText) {
+            setSourceInput(item.fullArticleText);
+            setInputMode('article');
+        } else {
+            setSourceInput(item.topic);
+            setInputMode('topic');
+        }
         const matched = STYLE_PRESETS.find(s => s.id === item.styleId);
         if (matched) {
             setSelectedStyles([matched]);
@@ -227,8 +232,16 @@ export const InfographicGenerator: React.FC<InfographicGeneratorProps> = ({
             stylePresetName: selectedStyles[0]?.name,
             stylePromptSuffix: selectedStyles[0]?.promptSuffix
         };
+        const planSpecificOptions: GenerationOptions = {
+            ...options,
+            dataEntries: plan.points && plan.points.length > 0 ? plan.points : advancedOptions.dataEntries
+        };
         try {
-            const urls = await aiService.generateInfographicImage(plan.imagePrompt, stylePrompt, options);
+            const urls = await aiService.generateInfographicImage(
+                `INFOGRAPHIC TITLE: ${plan.title}\nKEY CONCEPT: ${plan.imagePrompt}`, 
+                stylePrompt, 
+                planSpecificOptions
+            );
             const imagesForPlan: GeneratedImage[] = urls.map((url, j) => ({
                 id: j, url, isAnalyzing: true, flawSuggestions: [], isDetectingText: true, detectedText: [],
             }));
@@ -249,7 +262,7 @@ export const InfographicGenerator: React.FC<InfographicGeneratorProps> = ({
                     points: plan.points || [],
                     imageUrl: img.url,
                     aspectRatio: advancedOptions.aspectRatio,
-                    model: 'gpt-image-2',
+                    model: 'gemini-3-pro-image',
                     styleName: selectedStyles[0]?.name,
                     category: selectedStyles[0]?.category,
                     layout: advancedOptions.layout,
@@ -350,9 +363,10 @@ export const InfographicGenerator: React.FC<InfographicGeneratorProps> = ({
                 return;
             }
 
+            const isMultiSectionArticle = sourceInput.length > 250 || /(?:^|\n)\s*\d+[\.\)]/m.test(sourceInput);
             if (inputMode === 'file' && selectedFile) {
                 conceptPlans = await aiService.generateInfographicsFromFile(selectedFile, options);
-            } else if (inputMode === 'article') {
+            } else if (inputMode === 'article' || (inputMode === 'topic' && isMultiSectionArticle)) {
                 conceptPlans = await aiService.generateInfographicsFromArticle(sourceInput, options);
             } else if (inputMode === 'url') {
                 const results = await aiService.generateInfographicContentFromUrl(sourceInput, options);
@@ -372,7 +386,15 @@ export const InfographicGenerator: React.FC<InfographicGeneratorProps> = ({
             for (let i = 0; i < plansToRender.length; i++) {
                 const plan = plansToRender[i];
                 try {
-                    const urls = await aiService.generateInfographicImage(plan.imagePrompt, stylePrompt, options);
+                    const planSpecificOptions: GenerationOptions = {
+                        ...options,
+                        dataEntries: plan.points && plan.points.length > 0 ? plan.points : advancedOptions.dataEntries
+                    };
+                    const urls = await aiService.generateInfographicImage(
+                        `INFOGRAPHIC TITLE: ${plan.title}\nKEY CONCEPT: ${plan.imagePrompt}`, 
+                        stylePrompt, 
+                        planSpecificOptions
+                    );
                     const imagesForPlan: GeneratedImage[] = urls.map((url, j) => ({
                         id: j, url, isAnalyzing: true, flawSuggestions: [], isDetectingText: true, detectedText: [],
                     }));
@@ -383,7 +405,7 @@ export const InfographicGenerator: React.FC<InfographicGeneratorProps> = ({
                         return next;
                     });
 
-                    // Auto-archive newly synthesized visual into ZEN Certified Archive
+                    // Auto-archive newly synthesized visual into Certified Archive
                     imagesForPlan.forEach(img => {
                         historyService.saveItem({
                             title: plan.title,
@@ -391,11 +413,11 @@ export const InfographicGenerator: React.FC<InfographicGeneratorProps> = ({
                             points: plan.points || [],
                             imageUrl: img.url,
                             aspectRatio: options.aspectRatio,
-                            model: 'gpt-image-2',
+                            model: 'gemini-3-pro-image',
                             styleName: selectedStyles[0]?.name,
                             category: selectedStyles[0]?.category,
                             layout: options.layout,
-                            dataEntries: options.dataEntries,
+                            dataEntries: planSpecificOptions.dataEntries,
                             engraved: true,
                         }).catch(e => console.warn('Failed to archive infographic', e));
                     });
@@ -768,7 +790,7 @@ export const InfographicGenerator: React.FC<InfographicGeneratorProps> = ({
                                                     d[idx] = e.target.value;
                                                     updateOption('dataEntries', d);
                                                 }} 
-                                                placeholder="e.g., 90% Success Rate" 
+                                                placeholder="e.g., Tier 6: $50 / $500 / $5,000 Mandate" 
                                                 className="flex-1 p-4 bg-slate-900/50 border border-white/5 focus:border-blue-500/50 rounded-xl text-sm text-slate-200 placeholder:text-slate-700 transition-all" 
                                             />
                                             <button 

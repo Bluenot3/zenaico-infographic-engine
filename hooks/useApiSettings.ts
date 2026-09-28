@@ -6,11 +6,11 @@ const STORAGE_KEY = 'zen-api-settings';
 
 export const useApiSettings = () => {
   const [apiSettings, setApiSettings] = useState<ApiSettings>({
-    provider: 'openai',
+    provider: 'google',
     openaiApiKey: '',
     googleApiKey: '',
-    imageModel: 'gpt-image-2',
-    textModel: 'gpt-4o',
+    imageModel: 'gemini-3-pro-image',
+    textModel: 'gemini-3.1-pro-preview',
   });
   const [isLoaded, setIsLoaded] = useState(false);
 
@@ -20,11 +20,11 @@ export const useApiSettings = () => {
       if (storedSettings) {
         const parsed = JSON.parse(storedSettings);
         setApiSettings({
-          provider: parsed.provider || 'openai',
+          provider: parsed.provider || 'google',
           openaiApiKey: parsed.openaiApiKey || '',
           googleApiKey: parsed.googleApiKey || '',
-          imageModel: parsed.imageModel || 'gpt-image-2',
-          textModel: parsed.textModel || 'gpt-4o',
+          imageModel: parsed.imageModel || 'gemini-3-pro-image',
+          textModel: parsed.textModel || 'gemini-3.1-pro-preview',
         });
       }
     } catch (error) {
@@ -36,11 +36,11 @@ export const useApiSettings = () => {
   const saveApiSettings = useCallback((newSettings: ApiSettings) => {
     try {
       const settingsToSave: ApiSettings = {
-        provider: newSettings.provider || 'openai',
+        provider: newSettings.provider || 'google',
         openaiApiKey: newSettings.openaiApiKey || '',
         googleApiKey: newSettings.googleApiKey || '',
-        imageModel: newSettings.imageModel || 'gpt-image-2',
-        textModel: newSettings.textModel || 'gpt-4o',
+        imageModel: newSettings.imageModel || 'gemini-3-pro-image',
+        textModel: newSettings.textModel || 'gemini-3.1-pro-preview',
       };
 
       localStorage.setItem(STORAGE_KEY, JSON.stringify(settingsToSave));
