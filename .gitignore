@@ -30,4 +30,5 @@ dist-ssr
 zenaico-output/
 release/
 plugins/zenaico/server.mjs
+plugins/zenaico/cli.mjs
 plugins/zenaico/THIRD_PARTY_NOTICES.txt

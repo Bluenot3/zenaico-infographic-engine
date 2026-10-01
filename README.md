@@ -24,8 +24,11 @@ Requires Node.js 22.12+ and your Gemini or OpenAI API key. The packaged server
 includes its runtime dependencies. Start a new Codex session after installation.
 The plugin appears in the options from the configured ZEN AI Co. marketplace.
 
-Publication to the universal ChatGPT/Codex Plugins Directory is a separate hosted
-service and review process. See [directory submission status](docs/plugin-submission.md).
+The [executable-skills ZIP](https://github.com/Bluenot3/zenaico-infographic-engine/releases/latest)
+contains the same rendering engine and is prepared for **Skills only** submission
+to the universal ChatGPT/Codex directory, with no hosted MCP service required.
+Publisher verification, OpenAI review and publication are still required.
+See [directory submission status](docs/plugin-submission.md).
 
 ## Build and install from source
 
@@ -38,7 +41,7 @@ codex plugin marketplace add /absolute/path/to/zenaico-infographic-engine
 codex plugin add zenaico@zenaico
 ```
 
-`npm run pack:plugin` creates `release/zenaico-plugin-1.0.2.zip`. Its standalone
+`npm run pack:plugin` creates `release/zenaico-plugin-1.1.0.zip`. Its standalone
 server includes runtime dependencies, so recipients need Node.js but do not need
 an npm installation step. Configure `GEMINI_API_KEY` and/or `OPENAI_API_KEY` in the
 environment launching Codex, or point `ZENAICO_ENV_FILE` at a private file based on
@@ -92,9 +95,15 @@ actual output dimensions and does not silently switch image models. Website extr
 supports public HTML/text pages; pages requiring login or JavaScript need pasted text.
 Screenshots require a separately installed Chrome/Chromium. Sports results come from
 dated scoreboards and may lack detailed rosters or uniform information; absent fields
-are not fabricated. The local HTTP server is for a single user. Universal directory publication
-requires a production service with user isolation and OpenAI approval.
+are not fabricated. The local HTTP server is for a single user. A remote MCP submission requires
+a production service with user isolation. The executable-skills submission runs
+in each user's workspace instead. Both public directory routes require OpenAI approval.
 
 On a verified main-branch build, GitHub Actions publishes the standalone
 `plugin-dist` marketplace and a release ZIP with SHA-256 checksum. Public versions
 are immutable; bump the version before publishing a new release.
+
+The build also creates `release/zenaico-skills-1.1.0.zip`, a separate submission
+package with self-contained executables inside both skills. It includes no MCP
+configuration or registered integration reference. Command execution, Node.js
+and privately configured provider credentials are required in the user's workspace.

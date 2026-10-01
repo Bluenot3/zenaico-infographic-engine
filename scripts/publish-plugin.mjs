@@ -27,7 +27,8 @@ if (files.some(f => /(?:^|\/)\.env(?:$|\.(?!example$))/.test(f.path))) {
   throw new Error('Private environment files must not be published.');
 }
 if (process.argv.includes('--dry-run')) {
-  console.log(`Ready to publish ${tag}: ${files.length} standalone marketplace files and a release ZIP.`);
+  for (const name of [`zenaico-plugin-${manifest.version}.zip`, `zenaico-skills-${manifest.version}.zip`]) await readFile(resolve(root, 'release', name));
+  console.log(`Ready to publish ${tag}: ${files.length} standalone marketplace files, install ZIP and executable-skills submission ZIP.`);
   process.exit(0);
 }
 if (!repository || !commit || !token || process.env.GITHUB_REF !== 'refs/heads/main') {
@@ -80,7 +81,9 @@ codex plugin add zenaico@zenaico
 
 Requires Node.js 22.12+ and your Gemini or OpenAI API key. Provider usage is billed by your provider. No npm dependencies need to be installed for the packaged plugin. See the included README for secure configuration.
 
-This release is public through GitHub and the Git marketplace. A listing in the universal ChatGPT/Codex Plugins Directory requires a separately hosted HTTPS service, verified publisher and OpenAI approval. This release does not claim that approval.
+The executable-skills ZIP bundles the same engine inside each skill and is prepared for the portal's **Skills only** path. It requires Node.js, command execution and private provider credentials in each user's workspace; it needs no hosted MCP endpoint. See the submission guide for listing copy and eight review scenarios.
+
+This release is public through GitHub and the Git marketplace. A listing in the universal ChatGPT/Codex Plugins Directory requires a verified publisher, submission, OpenAI approval and publication from the portal. The directory submission has not been made and this release does not claim approval. Hosting and multi-user authentication are required only if choosing the remote MCP submission route instead.
 
 Checks: app build, plugin protocol/provider/artifact tests, and standalone transport verification. Live paid-provider image rendering still requires credentials.
 
@@ -89,7 +92,7 @@ const release = existing || await request('releases', 'POST', {
   tag_name: tag, target_commitish: commit, name: `Zenaico Visual Studio ${manifest.version}`,
   body, draft: true, prerelease: false,
 });
-for (const name of [`zenaico-plugin-${manifest.version}.zip`, `zenaico-plugin-${manifest.version}.zip.sha256`]) {
+for (const name of [`zenaico-plugin-${manifest.version}.zip`, `zenaico-plugin-${manifest.version}.zip.sha256`, `zenaico-skills-${manifest.version}.zip`, `zenaico-skills-${manifest.version}.zip.sha256`]) {
   if (release.assets.some(asset => asset.name === name)) continue;
   const data = await readFile(resolve(root, 'release', name));
   const response = await fetch(`${release.upload_url.replace(/\{.*$/, '')}?name=${encodeURIComponent(name)}`, {

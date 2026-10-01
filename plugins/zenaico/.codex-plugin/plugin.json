@@ -1,6 +1,6 @@
 {
   "name": "zenaico",
-  "version": "1.0.2",
+  "version": "1.1.0",
   "description": "Create and refine high-quality infographics with the original ZEN AI Co. studio engine.",
   "skills": "./skills/",
   "mcpServers": "./.mcp.json",
