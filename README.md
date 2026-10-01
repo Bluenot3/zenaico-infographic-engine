@@ -1,6 +1,6 @@
 # Zenaico Visual Studio plugin
 
-<img src="assets/zen-brand-logo.jpg" alt="ZEN AI Co. logo" width="160">
+<img src="plugins/zenaico/assets/zen-brand-logo.jpg" alt="ZEN AI Co. logo" width="160">
 
 The original ZEN AI Co. infographic engine, packaged as a Codex plugin with
 advanced visual styles, concepts, rendering, editing, review, sports graphics,

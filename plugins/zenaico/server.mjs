@@ -228050,7 +228050,7 @@ async function getSportsFeed(input3, signal) {
 }
 
 // plugin/src/mcp.ts
-var PLUGIN_VERSION = "1.0.1";
+var PLUGIN_VERSION = "1.0.2";
 function result(data) {
   return { content: [{ type: "text", text: JSON.stringify(data, null, 2) }], structuredContent: data };
 }
