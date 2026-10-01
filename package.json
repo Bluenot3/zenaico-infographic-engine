@@ -33,14 +33,14 @@
     "openai": "^6.49.0",
     "proxy-from-env": "^2.1.0",
     "puppeteer": "^24.40.0",
-    "puppeteer-core": "^25.12.0",
+    "puppeteer-core": "^24.40.0",
     "react": "^19.2.0",
     "react-dom": "^19.2.0",
     "sonner": "^2.0.7",
     "tailwind-merge": "^3.5.0",
     "tailwindcss": "^4.2.2",
     "tsx": "^4.21.0",
-    "undici": "^8.11.2",
+    "undici": "^7.16.0",
     "zod": "^4.6.5"
   },
   "devDependencies": {
