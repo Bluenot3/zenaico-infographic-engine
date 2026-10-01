@@ -12,7 +12,8 @@ for (const oldAsset of ['zen-logo.svg', 'zen-brand-logo.png']) {
 }
 await cp(resolve(root, '.env.example'), resolve(destination, '.env.example'));
 const result = await build({
-  entryPoints: [resolve(root, 'plugin/src/server.ts')], outfile: resolve(destination, 'server.mjs'),
+  entryPoints: { server: resolve(root, 'plugin/src/server.ts'), cli: resolve(root, 'plugin/src/cli.ts') }, outdir: destination,
+  outExtension: { '.js': '.mjs' },
   bundle: true, platform: 'node', target: 'node22', format: 'esm', legalComments: 'eof', metafile: true,
   banner: { js: 'import { createRequire as zenaicoCreateRequire } from "node:module"; const require = zenaicoCreateRequire(import.meta.url);' },
 });

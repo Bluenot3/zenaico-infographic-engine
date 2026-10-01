@@ -12,7 +12,7 @@ import { getSportsFeed } from './sports';
 import { redactError } from './errors';
 export { redactError } from './errors';
 
-export const PLUGIN_VERSION = '1.0.2';
+export const PLUGIN_VERSION = '1.1.0';
 function result(data: Record<string, unknown>): CallToolResult {
   return { content: [{ type: 'text', text: JSON.stringify(data, null, 2) }], structuredContent: data };
 }
@@ -42,7 +42,7 @@ export function createMcpServer(engine: VisualEngine) {
     version: PLUGIN_VERSION, providers: { google: Boolean(engine.providers.google), openai: Boolean(engine.providers.openai) },
     defaults: engine.providers.settings(), styleCount: STYLE_PRESETS.length,
     artifactDirectory: engine.store.root, screenshotSupport: Boolean(chromePath()),
-    credentials: 'Set GEMINI_API_KEY and/or OPENAI_API_KEY in the server environment or ZENAICO_ENV_FILE.',
+    credentials: 'Set GEMINI_API_KEY and/or OPENAI_API_KEY in the execution environment or ZENAICO_ENV_FILE.',
   })));
   server.registerTool('list_styles', { title: 'Browse visual styles', description: 'Browse the app’s original preset library, including cross-domain fusion, broadcast, luxury, blueprint, editorial and minimalist styles.',
     inputSchema: { category: z.string().optional(), query: z.string().optional() }, annotations: readOnly }, safe(args => {

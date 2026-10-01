@@ -24,6 +24,7 @@ jobs:
       - run: npm run build
       - run: npm run test:plugin
       - run: npm run pack:plugin
+      - run: node scripts/validate-submission.mjs
       - run: node scripts/publish-plugin.mjs --dry-run
       - uses: actions/upload-artifact@v4
         with:

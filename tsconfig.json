@@ -26,5 +26,5 @@
     "allowImportingTsExtensions": true,
     "noEmit": true
   },
-  "exclude": ["node_modules", "dist", "release", "plugins/zenaico/server.mjs"]
+  "exclude": ["node_modules", "dist", "release", "plugins/zenaico/*.mjs"]
 }

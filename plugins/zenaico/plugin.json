@@ -1,7 +1,7 @@
 {
   "$schema": "https://agent-plugins.org/schemas/1.0.0/plugin.schema.json",
   "name": "zenaico",
-  "version": "1.0.2",
+  "version": "1.1.0",
   "description": "Create, edit, review and export high-quality infographics and visuals with the ZEN AI Co. studio engine.",
   "author": {
     "name": "Bluenot3",

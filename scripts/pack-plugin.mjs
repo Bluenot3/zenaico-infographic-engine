@@ -36,3 +36,26 @@ for (const [name, bytes] of Object.entries(files)) {
   await writeFile(target, bytes);
 }
 console.log(`Installable package: ${path}`);
+
+// A separate executable-skills package is eligible for Skills only submission.
+// Each skill retains its own runtime if the host imports skills independently.
+const interfaceFields = { ...manifest.extensions['com.openai'].interface,
+  longDescription: 'Create high-quality infographics and visual collections with the original ZEN AI Co. studio engine. Plan source-grounded concepts, blend advanced styles, render and edit images, review legibility and factual fidelity, and build balanced sports visuals. The bundled executable runs in your own workspace with Node.js 22.12+, command execution and your privately configured Gemini or OpenAI API key. Provider usage is billed by your provider. No shared hosted service is required.' };
+const skillsManifest = { ...manifest, extensions: { 'com.openai': { interface: interfaceFields } } };
+const skillsFiles = {
+  'zenaico-skills/plugin.json': strToU8(`${JSON.stringify(skillsManifest, null, 2)}\n`),
+  'zenaico-skills/.codex-plugin/plugin.json': strToU8(`${JSON.stringify({ name: manifest.name, version: manifest.version, description: manifest.description, skills: './skills/', interface: interfaceFields }, null, 2)}\n`),
+  'zenaico-skills/README.md': new Uint8Array(await readFile(resolve(root, 'plugin/submission/README.md'))),
+  'zenaico-skills/assets/zen-brand-logo.jpg': new Uint8Array(await readFile(resolve(root, 'public/zen-brand-logo.jpg'))),
+};
+for (const skill of ['create-infographics', 'sports-graphics']) {
+  const prefix = `zenaico-skills/skills/${skill}`;
+  skillsFiles[`${prefix}/SKILL.md`] = new Uint8Array(await readFile(resolve(root, `plugin/submission/skills/${skill}/SKILL.md`)));
+  skillsFiles[`${prefix}/scripts/zenaico.mjs`] = new Uint8Array(await readFile(resolve(root, 'plugins/zenaico/cli.mjs')));
+  skillsFiles[`${prefix}/scripts/THIRD_PARTY_NOTICES.txt`] = new Uint8Array(await readFile(resolve(root, 'plugins/zenaico/THIRD_PARTY_NOTICES.txt')));
+}
+const skillsPath = resolve(root, `release/zenaico-skills-${manifest.version}.zip`);
+const skillsArchive = zipSync(skillsFiles, { level: 6 });
+await writeFile(skillsPath, skillsArchive);
+await writeFile(`${skillsPath}.sha256`, `${createHash('sha256').update(skillsArchive).digest('hex')}  zenaico-skills-${manifest.version}.zip\n`);
+console.log(`Directory submission package: ${skillsPath}`);
