@@ -104,5 +104,16 @@ For local Streamable HTTP testing, run `node server.mjs --http`. It listens at
 Binding to a non-loopback interface requires a token. This is a single-user service;
 a listing in the universal ChatGPT/Codex Plugins Directory requires a production
 HTTPS endpoint, user isolation, verified publisher, and OpenAI review and publication.
-The public Git marketplace and ZIP work in Codex. They do not establish directory
+A separate executable-skills ZIP bundles the same engine and can be submitted
+through **Skills only**, without a hosted MCP endpoint. It requires Node.js,
+command execution and private provider keys in each user's workspace. The public
+Git marketplace and ZIP work in Codex; neither package establishes directory
 approval. [Submission preparation](https://github.com/Bluenot3/zenaico-infographic-engine/blob/main/docs/plugin-submission.md) records the remaining requirements.
+
+## Command runner
+
+The standard package also includes `cli.mjs`. Run `node cli.mjs commands` for
+command schemas or `node cli.mjs get_status` to check configuration. Write command
+arguments to a JSON file and pass `--input /absolute/path/request.json`. Image
+commands finish in that execution process; use the host's session controls to
+wait or cancel. API configuration and saved artifacts are shared with the server.
