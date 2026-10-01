@@ -22,3 +22,12 @@ dist-ssr
 *.njsproj
 *.sln
 *.sw?
+
+# Credentials and generated plugin files
+.env
+.env.*
+!.env.example
+zenaico-output/
+release/
+plugins/zenaico/server.mjs
+plugins/zenaico/THIRD_PARTY_NOTICES.txt

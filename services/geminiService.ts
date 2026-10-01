@@ -2,6 +2,7 @@ import { GoogleGenAI, GenerateContentResponse, Type, Modality } from "@google/ge
 import type { InfographicContent, ChatMessage, GenerationOptions, DetectedText, ApiSettings, StylePreset } from '../types';
 import { DomainHarmonizer } from './domainHarmonizer';
 import { STYLE_PRESETS } from '../constants';
+import { buildConceptPrompt, buildImagePrompt } from './infographicPrompts';
 
 const getApiSettings = (): ApiSettings => {
     try {
@@ -163,83 +164,7 @@ export const suggestDataPoints = async (topic: string): Promise<string[]> => {
 
 export const generateInfographicConcepts = async (topic: string, options: GenerationOptions): Promise<InfographicContent[]> => {
     const settings = getApiSettings();
-    const validData = options.dataEntries.filter(e => e.trim() !== '');
-
-    const effectivePreset = options.stylePreset || 
-        STYLE_PRESETS.find(s => s.name === options.stylePresetName || s.promptSuffix === options.stylePromptSuffix) || 
-        STYLE_PRESETS[0];
-
-    const harmony = DomainHarmonizer.harmonize({
-        topic,
-        stylePreset: effectivePreset,
-        options
-    });
-
-    // Check if topic is a rich multi-section article or stack
-    const articleStructure = DomainHarmonizer.extractArticleStructure(topic);
-    const hasStructuredLayers = articleStructure.sections.length > 0;
-
-    const crossDomainGuidance = harmony.isIntertwined 
-        ? `\nCROSS-DOMAIN STYLE HARMONY ACTIVATED: ${harmony.fusionHeadline}
-${harmony.fusionDescription}
-${harmony.antiMorphingDirectives}
-Ensure the 4 infographic concepts creatively translate the visual archetype (${harmony.styleArchetype}) onto the authentic domain (${harmony.contentDomain}) without morphing or chimeric artifacts.
-Recommended concept structures: ${harmony.suggestedConceptTitles.join(', ')}.\n` 
-        : '';
-    
-    let prompt: string;
-    if (hasStructuredLayers) {
-        prompt = `
-      TASK: Create 4 completely different publication-ready infographic concepts for the article/stack: "${articleStructure.coreTitle}".
-      
-      CORE ARTICLE THESIS:
-      ${articleStructure.thesis}
-      
-      EXTRACTED STRUCTURED TIERS / LAYERS (${articleStructure.sections.length} Tiers):
-      ${articleStructure.sections.map(s => `* Layer ${s.number}: ${s.heading} -> Key principle: ${s.summary}${s.metrics.length > 0 ? ` (Metrics: ${s.metrics.join(', ')})` : ''}`).join('\n')}
-      
-      REAL METRICS TO HIGHLIGHT:
-      ${[...validData, ...articleStructure.keyMetrics].filter(Boolean).join(', ')}
-      
-      VISUAL STYLE: ${effectivePreset.name} (${effectivePreset.promptSuffix})
-      TARGET AUDIENCE: ${options.targetAudience}
-      TONE: ${options.tone}
-      COMPLEXITY: ${options.visualComplexity || 'ultra-detailed'}
-      ${crossDomainGuidance}
-
-      MANDATORY 4 CONCEPT BLUEPRINTS TO GENERATE:
-      1. Concept 1 (Complete Stack Hierarchy): Visualizes all ${articleStructure.sections.length} layers in an interconnected vertical architecture diagram with status indicators, boundary gates, and execution layers.
-      2. Concept 2 (Bounded Autonomy & Governance Matrix): Deep-dive comparison matrix contrasting unrestricted machine autonomy with bounded autonomy, emphasizing transaction thresholds, spending mandates ($50 / $500 / $5,000), and permission surfaces.
-      3. Concept 3 (Accountability & Recourse Telemetry): Focuses on the institutional bridge (Machine Identity, Audit Trails, Monitoring Circuits, Insurance Liability, and Human Recourse).
-      4. Concept 4 (${harmony.styleArchetype === 'sports_broadcast' ? 'ESPN Sports Analyst / Tale of the Tape Breakdown' : 'Analytical Telemetry Breakdown'}): An elite analytical overview translating the layers into high-contrast telemetry ribbons, Tale of the Tape comparisons, and executive scoring matrices (Strictly NO athletic balls or turf artifacts).
-
-      CRITICAL CONTENT FIDELITY INSTRUCTIONS:
-      - Strictly ground every concept in the actual article content. NEVER hallucinate generic corporate filler or unrelated KPIs (e.g. do NOT invent "Program Completion Rate").
-      - Each "imagePrompt" MUST explicitly mandate rendering the real layer titles ("1. TRAINING", "2. IDENTITY", ... "10. RECOURSE") and specific numerical limits ($50, $500, $5,000, 900,000 transactions).
-      - Use ONLY concise bullet points and large readable data labels.
-      ${options.excludeElements ? `EXCLUDED ELEMENTS: ${options.excludeElements}` : ''}
-        `.trim();
-    } else {
-        const isSportsTopic = /\b(football|quarterback|nfl|ncaa|georgia|game|touchdown)\b/i.test(topic);
-        const sportsAccuracyClause = isSportsTopic 
-            ? "ACCURACY MANDATE: Grounded in 2026 sports rosters (e.g. for Georgia Bulldogs, starting QB is Gunner Stockton #14)." 
-            : "";
-        prompt = `
-      TASK: Create 4 completely different infographic concepts for "${topic}".
-      MANDATORY DATA TO INCLUDE: ${validData.join(', ')}
-      Target: ${options.targetAudience}
-      Tone: ${options.tone}
-      Complexity: ${options.visualComplexity || 'ultra-detailed'}
-      ${crossDomainGuidance}
-
-      The infographics MUST visually represent the provided data points using highly creative charts, callouts, and thematic objects.
-      Each concept should have a unique layout (${options.layout}).
-      CRITICAL: Ensure the visual concepts are ABSOLUTE MASTERPIECES packed with incredible, one-of-a-kind thematic objects, mind-blowing graphics, and highly creative ways of integrating the stats and facts directly into the visual elements. The design MUST be dense with meaningful, breathtaking details.
-      TEXT CONSTRAINT: Keep all text extremely brief. Use ONLY short bullet points, large numbers, and concise labels. DO NOT use paragraphs or long sentences.
-      ${sportsAccuracyClause}
-      ${options.excludeElements ? `EXCLUDED ELEMENTS: ${options.excludeElements}` : ''}
-        `.trim();
-    }
+    const prompt = buildConceptPrompt(topic, options);
 
     const useOpenAI = settings.provider === 'openai' && (settings.openaiApiKey || process.env.OPENAI_API_KEY);
 
@@ -287,45 +212,7 @@ export const generateInfographicImage = async (prompt: string, stylePrompt: stri
     const isOpenAIModel = modelToUse.startsWith('gpt-image') || modelToUse.startsWith('dall-e');
     const useOpenAI = settings.provider === 'openai' && (isOpenAIModel || settings.openaiApiKey || process.env.OPENAI_API_KEY);
 
-    const validData = options.dataEntries.filter(e => e.trim() !== '');
-    const dataPrompt = validData.length > 0 ? `CRITICAL TEXT TO RENDER EXACTLY:\n${validData.map(d => `* "${d}"`).join('\n')}` : '';
-    
-    const complexityMod = options.visualComplexity === 'ultra-detailed' 
-        ? "Ultra-technical schematic style, microscopic physical textures, ray-traced lighting, dense data visualizations, complex HUD elements."
-        : "Clean, standard professional layout, high readability, balanced white space.";
-
-    // Cross-Domain Harmonization & Anti-Morphing Guard
-    const effectivePreset = options.stylePreset || 
-        STYLE_PRESETS.find(s => s.promptSuffix === stylePrompt || s.name === options.stylePresetName) || 
-        { id: 'custom', name: options.stylePresetName || 'Active Style', promptSuffix: stylePrompt, category: 'Custom' };
-
-    const harmony = DomainHarmonizer.harmonize({
-        topic: prompt,
-        stylePreset: effectivePreset,
-        options
-    });
-
-    const finalStylePrompt = harmony.isIntertwined ? harmony.harmonizedStylePrompt : stylePrompt;
-    const finalPositive = harmony.isIntertwined 
-        ? `${harmony.adaptedPositivePrompt}, ${options.positivePrompt || ''}` 
-        : (options.positivePrompt || 'absolute masterpiece, one-of-a-kind, incredible objects, breathtaking textures, 8k, sharp focus, highly detailed, dense visual information, creative data visualization, beautiful typography');
-    const finalNegative = harmony.isIntertwined 
-        ? `${harmony.strictNegativePrompt}, ${options.negativePrompt || ''}` 
-        : (options.negativePrompt || 'blurry, low quality, artifacts, boring, plain, sparse, unreadable text, generic');
-
-    const finalPrompt = `
-      ${prompt}
-      
-      ${dataPrompt}
-      
-      STRICT REQUIREMENT: Visually render exact numbers and key labels directly into the image. Bold typography, creative charts, seamless visual integration.
-      TEXT CONSTRAINT: Minimal text. Use ONLY large, bold, readable labels, short bullet points, and big data numbers. No dense paragraphs.
-      VISUAL STYLE: ${finalStylePrompt}
-      COMPLEXITY: ${complexityMod}
-      ENHANCEMENT: Masterpiece infographic visual, state-of-the-art lab quality, award-winning graphic design, 8k resolution, razor-sharp focus, photorealistic textures.
-      ${finalPositive}
-      NEGATIVE: ${finalNegative}
-    `.trim();
+    const finalPrompt = buildImagePrompt(prompt, stylePrompt, options);
 
     if (useOpenAI) {
         try {
