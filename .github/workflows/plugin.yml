@@ -6,6 +6,9 @@ on:
   workflow_dispatch:
 permissions:
   contents: read
+concurrency:
+  group: zenaico-plugin-${{ github.ref }}
+  cancel-in-progress: false
 jobs:
   verify:
     runs-on: ubuntu-latest
@@ -21,7 +24,28 @@ jobs:
       - run: npm run build
       - run: npm run test:plugin
       - run: npm run pack:plugin
+      - run: node scripts/publish-plugin.mjs --dry-run
       - uses: actions/upload-artifact@v4
         with:
           name: zenaico-plugin
-          path: release/zenaico-plugin-*.zip
+          path: release/
+          include-hidden-files: true
+  publish:
+    if: github.ref == 'refs/heads/main' && github.event_name != 'pull_request'
+    needs: verify
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - uses: actions/download-artifact@v4
+        with:
+          name: zenaico-plugin
+          path: release/
+      - name: Publish standalone marketplace and release
+        run: node scripts/publish-plugin.mjs
+        env:
+          GH_TOKEN: ${{ github.token }}

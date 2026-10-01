@@ -1,13 +1,15 @@
 import { build } from 'esbuild';
-import { cp, mkdir, readFile, writeFile } from 'node:fs/promises';
+import { cp, mkdir, readFile, rm, writeFile } from 'node:fs/promises';
 import { fileURLToPath } from 'node:url';
 import { resolve, dirname } from 'node:path';
 
 const root = resolve(dirname(fileURLToPath(import.meta.url)), '..');
 const destination = resolve(root, 'plugins/zenaico');
 await mkdir(resolve(destination, 'assets'), { recursive: true });
-await writeFile(resolve(destination, 'assets/zen-logo.svg'), (await readFile(resolve(root, 'public/zen-logo.svg'), 'utf8')).replace(/[ \t]+$/gm, ''));
-await cp(resolve(root, 'public/zen-brand-logo.png'), resolve(destination, 'assets/zen-brand-logo.png'));
+await cp(resolve(root, 'public/zen-brand-logo.jpg'), resolve(destination, 'assets/zen-brand-logo.jpg'));
+for (const oldAsset of ['zen-logo.svg', 'zen-brand-logo.png']) {
+  await rm(resolve(destination, 'assets', oldAsset), { force: true });
+}
 await cp(resolve(root, '.env.example'), resolve(destination, '.env.example'));
 const result = await build({
   entryPoints: [resolve(root, 'plugin/src/server.ts')], outfile: resolve(destination, 'server.mjs'),

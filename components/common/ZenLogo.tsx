@@ -21,7 +21,7 @@ export const ZenLogo: React.FC<ZenLogoProps> = ({
   glow = false,
   customLogoUrl,
 }) => {
-  const [logoSrc, setLogoSrc] = useState<string>('/zen-brand-logo.png');
+  const [logoSrc, setLogoSrc] = useState<string>('/zen-brand-logo.jpg');
   const [imgError, setImgError] = useState(false);
 
   useEffect(() => {
@@ -35,11 +35,11 @@ export const ZenLogo: React.FC<ZenLogoProps> = ({
           setLogoSrc(storedLogo);
           setImgError(false);
         } else {
-          setLogoSrc('/zen-brand-logo.png');
+          setLogoSrc('/zen-brand-logo.jpg');
           setImgError(false);
         }
       } catch {
-        setLogoSrc('/zen-brand-logo.png');
+        setLogoSrc('/zen-brand-logo.jpg');
       }
     };
 
@@ -75,7 +75,7 @@ export const ZenLogo: React.FC<ZenLogoProps> = ({
             style={{ imageRendering: 'auto' }}
             onError={() => {
               // Cascade through available official logo formats
-              if (logoSrc === '/zen-brand-logo.png') {
+              if (logoSrc === '/zen-brand-logo.jpg') {
                 setLogoSrc('/zen-logo.svg');
               } else if (logoSrc === '/zen-logo.svg') {
                 setLogoSrc('/Copy of ZEN Brand Logo (2).png');

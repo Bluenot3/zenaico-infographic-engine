@@ -1,10 +1,28 @@
 # Zenaico Visual Studio plugin
 
+<img src="assets/zen-brand-logo.jpg" alt="ZEN AI Co. logo" width="160">
+
 The original ZEN AI Co. infographic engine, packaged as a Codex plugin with
 advanced visual styles, concepts, rendering, editing, review, sports graphics,
 screenshots and a persistent artifact library.
 
+## Install from the public marketplace
+
+Requires Node.js 22.12 or newer and a configured Gemini or OpenAI API key.
+Anyone can install the public Git marketplace without building the app:
+
+```bash
+codex plugin marketplace add Bluenot3/zenaico-infographic-engine --ref plugin-dist
+codex plugin add zenaico@zenaico
+```
+
+The plugin appears in the options from your configured ZEN AI Co. marketplace.
+Start a new Codex session after installation. To upgrade, run
+`codex plugin marketplace upgrade zenaico` and reinstall `zenaico@zenaico`.
+
 ## Install the release ZIP
+
+Download the ZIP from the [public releases page](https://github.com/Bluenot3/zenaico-infographic-engine/releases/latest).
 
 1. Extract the ZIP. It contains a `zenaico-plugin` directory with a marketplace
    and a ready-to-run plugin. Node.js 22.12 or newer is required; you do not need
@@ -21,7 +39,7 @@ screenshots and a persistent artifact library.
 
    ```bash
    codex plugin marketplace add /absolute/path/to/zenaico-plugin
-   codex plugin add zenaico@zenaico-local
+   codex plugin add zenaico@zenaico
    ```
 
 Start a new Codex session and ask: “Use Zenaico to turn this article into four
@@ -84,5 +102,7 @@ The standalone server also works with clients supporting local MCP over stdio:
 For local Streamable HTTP testing, run `node server.mjs --http`. It listens at
 `http://127.0.0.1:3333/mcp`; configure `ZENAICO_MCP_TOKEN` for bearer authentication.
 Binding to a non-loopback interface requires a token. This is a single-user service;
-a public ChatGPT directory listing additionally requires hosted HTTPS, appropriate
-user authentication, and directory submission. The ZIP is ready for local Codex use.
+a listing in the universal ChatGPT/Codex Plugins Directory requires a production
+HTTPS endpoint, user isolation, verified publisher, and OpenAI review and publication.
+The public Git marketplace and ZIP work in Codex. They do not establish directory
+approval. [Submission preparation](https://github.com/Bluenot3/zenaico-infographic-engine/blob/main/docs/plugin-submission.md) records the remaining requirements.

@@ -277,7 +277,7 @@ export const SettingsPanel: React.FC<SettingsPanelProps> = ({ isOpen, onClose, c
                             {customLogoUrl ? 'Custom Organization Logo' : 'Official Studio Hallmark Emblem'}
                         </span>
                         <span className="text-[11px] text-slate-400 font-mono">
-                            {customLogoUrl ? 'User Asset Loaded' : '1024x1024 Master Asset · zen-brand-logo.png'}
+                            {customLogoUrl ? 'User Asset Loaded' : '1254×1254 Master Asset · zen-brand-logo.jpg'}
                         </span>
                         <span className="text-[10px] text-emerald-400 font-semibold mt-0.5">
                             ✓ Engraved on Infographics & Downloads
@@ -303,20 +303,20 @@ export const SettingsPanel: React.FC<SettingsPanelProps> = ({ isOpen, onClose, c
                     )}
 
                     <a 
-                        href="/zen-brand-logo.png" 
-                        download="zen-brand-logo.png"
+                        href="/zen-brand-logo.jpg"
+                        download="zen-brand-logo.jpg"
                         className="px-3 py-2 rounded-xl text-xs font-bold bg-white/10 text-slate-300 hover:text-white hover:bg-white/15 border border-white/10 transition-all active:scale-95"
-                        title="Download official PNG logo"
+                        title="Download official logo"
                     >
-                        PNG
+                        JPG
                     </a>
                     <a 
                         href="/zen-logo.svg" 
                         download="zen-logo.svg"
                         className="px-3 py-2 rounded-xl text-xs font-bold bg-white/10 text-slate-300 hover:text-white hover:bg-white/15 border border-white/10 transition-all active:scale-95"
-                        title="Download official SVG vector"
+                        title="Download legacy vector emblem"
                     >
-                        SVG
+                        Legacy SVG
                     </a>
                 </div>
             </div>

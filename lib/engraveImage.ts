@@ -94,9 +94,9 @@ export async function createEngravedInfographic(
 
       let customOrBrandLogo: string | null = null;
       try {
-        customOrBrandLogo = options.customLogoUrl || localStorage.getItem('zen_custom_brand_logo') || '/zen-brand-logo.png';
+        customOrBrandLogo = options.customLogoUrl || localStorage.getItem('zen_custom_brand_logo') || '/zen-brand-logo.jpg';
       } catch {
-        customOrBrandLogo = '/zen-brand-logo.png';
+        customOrBrandLogo = '/zen-brand-logo.jpg';
       }
 
       let logoDrawn = false;
