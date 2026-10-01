@@ -1,0 +1,27 @@
+name: Verify Zenaico plugin
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    env:
+      PUPPETEER_SKIP_DOWNLOAD: 'true'
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      - run: npm run build
+      - run: npm run test:plugin
+      - run: npm run pack:plugin
+      - uses: actions/upload-artifact@v4
+        with:
+          name: zenaico-plugin
+          path: release/zenaico-plugin-*.zip

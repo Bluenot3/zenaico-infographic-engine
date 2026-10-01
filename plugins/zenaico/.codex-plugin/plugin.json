@@ -1,0 +1,16 @@
+{
+  "name": "zenaico",
+  "version": "1.0.0",
+  "description": "Create and refine high-quality infographics with the original ZEN AI Co. studio engine.",
+  "skills": "./skills/",
+  "mcpServers": "./.mcp.json",
+  "interface": {
+    "displayName": "Zenaico Visual Studio",
+    "shortDescription": "Create striking infographics and publication-quality visuals.",
+    "developerName": "ZEN AI Co.",
+    "category": "Design",
+    "brandColor": "#2563EB",
+    "composerIcon": "./assets/zen-logo.svg",
+    "logo": "./assets/zen-brand-logo.png"
+  }
+}

@@ -1,0 +1,30 @@
+{
+  "$schema": "https://agent-plugins.org/schemas/1.0.0/plugin.schema.json",
+  "name": "zenaico",
+  "version": "1.0.0",
+  "description": "Create, edit, review and export high-quality infographics and visuals with the ZEN AI Co. studio engine.",
+  "author": { "name": "Bluenot3", "url": "https://github.com/Bluenot3" },
+  "repository": "https://github.com/Bluenot3/zenaico-infographic-engine",
+  "homepage": "https://github.com/Bluenot3/zenaico-infographic-engine",
+  "keywords": ["infographics", "visual-design", "image-generation", "sports", "gemini", "openai"],
+  "extensions": {
+    "com.openai": {
+      "interface": {
+        "displayName": "Zenaico Visual Studio",
+        "shortDescription": "Create striking infographics and publication-quality visuals.",
+        "longDescription": "The original ZEN AI Co. infographic engine, packaged for Codex: source-grounded concepts, advanced styles and design controls, high-quality rendering, source-image editing, visual review, text detection, live sports scores, screenshots, and persistent visual collections.",
+        "developerName": "ZEN AI Co.",
+        "category": "Design",
+        "capabilities": ["Read", "Write"],
+        "brandColor": "#2563EB",
+        "composerIcon": "./assets/zen-logo.svg",
+        "logo": "./assets/zen-brand-logo.png",
+        "defaultPrompt": [
+          "Turn this article into four striking infographics using Zenaico.",
+          "Create a detailed technical infographic with Zenaico’s cross-domain styles.",
+          "Review and refine this graphic, then export a visual collection."
+        ]
+      }
+    }
+  }
+}

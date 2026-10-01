@@ -1,3 +1,4 @@
+import { buildBalancedSportsPrompt } from './sportsPrompts';
 import { GoogleGenAI } from "@google/genai";
 import OpenAI from "openai";
 import type { SportsGame, SportsFeedResponse, InfographicContent } from "../types";
@@ -1110,62 +1111,7 @@ Return ONLY a valid JSON object matching this schema:
     stylePrompt: string, 
     variationIndex: number = 0
   ): string {
-    const homePerformers = game.boxScore?.topPerformers?.filter(p => 
-      p.includes(game.homeTeam.shortName) || p.includes(game.homeTeam.name)
-    ) || [];
-    const awayPerformers = game.boxScore?.topPerformers?.filter(p => 
-      p.includes(game.awayTeam.shortName) || p.includes(game.awayTeam.name)
-    ) || [];
-
-    let homeLeadPlayer = homePerformers[0] || `${game.homeTeam.name} Star Playmaker`;
-    let awayLeadPlayer = awayPerformers[0] || `${game.awayTeam.name} Star Playmaker`;
-
-    // Strictly sanitize player names for Georgia to prevent Carson Beck from ever entering the image generation prompt
-    if (/georgia|uga/i.test(game.homeTeam.name) || game.homeTeam.shortName === 'UGA') {
-      homeLeadPlayer = homeLeadPlayer.replace(/carson\s+beck|c\.\s*beck|beck/gi, "Gunner Stockton #14");
-    }
-    if (/georgia|uga/i.test(game.awayTeam.name) || game.awayTeam.shortName === 'UGA') {
-      awayLeadPlayer = awayLeadPlayer.replace(/carson\s+beck|c\.\s*beck|beck/gi, "Gunner Stockton #14");
-    }
-
-    const awayColor = game.awayTeam.color || '#00338D';
-    const homeColor = game.homeTeam.color || '#E31837';
-
-    const stadium = game.stadiumName || game.venue || 'Stadium';
-    const homeUniform = game.homeTeam.uniformBrand || 'official uniform';
-    const awayUniform = game.awayTeam.uniformBrand || 'official uniform';
-    const webPhotoContext = game.webImageReferences?.join('; ') || 'Live sports action photography';
-
-    const effectivePreset = {
-      id: 'sports-sel',
-      name: styleName,
-      promptSuffix: stylePrompt,
-      category: 'Sports & Gameday'
-    };
-    const harmony = DomainHarmonizer.harmonize({
-      topic: `${game.awayTeam.name} vs ${game.homeTeam.name}`,
-      stylePreset: effectivePreset
-    });
-    const activeStylePrompt = harmony.isIntertwined ? harmony.harmonizedStylePrompt : stylePrompt;
-    const antiMorphRule = harmony.isIntertwined 
-      ? `\n- CROSS-DOMAIN HARMONY & ANTI-MORPHING: ${harmony.fusionHeadline}. Strictly preserve authentic human athlete anatomy, verified team colors (${awayColor} & ${homeColor}), official logos, and realistic stadium setting. Channel the ${styleName} visual language exclusively through technical drafting lines, telemetry scorebug HUD, and analytical data overlays (never turn players into robots or cartoons).` 
-      : '';
-
-    const scoreString = game.score 
-      ? `${game.awayTeam.shortName} ${game.score.away}  —  ${game.score.home} ${game.homeTeam.shortName}` 
-      : `${game.awayTeam.shortName}  VS  ${game.homeTeam.shortName}`;
-
-    return `Ultra-high-resolution, award-winning sports broadcast infographic for ${game.awayTeam.name} vs ${game.homeTeam.name} at ${stadium}.
-CRITICAL FACTUAL UNIFORM & ROSTER ACCURACY MANDATE:
-- LEFT HALF (50%): Dedicated to ${game.awayTeam.name}. Official colors (${awayColor}), official team logo and helmet, bold team typography, and a prominent featured player card showcasing ${awayLeadPlayer} wearing their verified ${awayUniform} uniform, authentic jersey number, and official team decals.
-- RIGHT HALF (50%): Dedicated to ${game.homeTeam.name}. Official colors (${homeColor}), official team logo and helmet, bold team typography, and a prominent featured player card showcasing ${homeLeadPlayer} wearing their verified ${homeUniform} uniform, authentic jersey number, and official team decals.
-- SPECIAL UNIFORM VERIFICATION: ${game.homeTeam.name} is rendered in authentic ${homeUniform}; ${game.awayTeam.name} is rendered in authentic ${awayUniform}.
-- VENUE & ARCHITECTURE: Authentic backdrop of ${stadium} (${game.stadiumLocation || ''}), featuring its recognizable stadium architecture, floodlights, and crowd atmosphere.
-- WEB ACTION REFERENCE CONTEXT: Grounded in real game photography: ${webPhotoContext}.
-- CENTER SCOREBUG: Symmetrical broadcast scorebug card displaying "${scoreString}", quarter/time "${game.quarterOrTime}", and venue "${stadium}".
-- CENTER/LOWER HUD: Symmetrical head-to-head comparison stat bars comparing both teams side-by-side for Passing Yards, Rushing Yards, Total Offense, and Turnovers.
-- VISUAL STYLE: ${styleName}. ${activeStylePrompt}.${antiMorphRule}
-- LIGHTING & AESTHETIC: High-intensity stadium floodlights, volumetric atmospheric arena fog, glossy glassmorphic telemetry cards, 3D broadcast motion graphic finish, razor-sharp 8k resolution. Zero single-team bias; both teams, players, and colors are equally celebrated.`;
+    return buildBalancedSportsPrompt(game, styleName, stylePrompt, variationIndex);
   }
 
   public static async synthesizeInfographicPlan(params: {
