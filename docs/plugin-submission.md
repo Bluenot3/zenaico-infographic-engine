@@ -9,7 +9,7 @@ the plugin for all directory users automatically.
 ## Prepared listing
 
 - Publication name: **Zenaico Visual Studio**
-- Package name: `zenaico`; version: `1.0.1`
+- Package name: `zenaico`; version: `1.0.2`
 - Publisher: **ZEN AI Co.** (the verified Platform identity must match)
 - Category: **Design**
 - Short description: **Infographics & visual design**

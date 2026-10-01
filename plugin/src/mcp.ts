@@ -12,7 +12,7 @@ import { getSportsFeed } from './sports';
 import { redactError } from './errors';
 export { redactError } from './errors';
 
-export const PLUGIN_VERSION = '1.0.1';
+export const PLUGIN_VERSION = '1.0.2';
 function result(data: Record<string, unknown>): CallToolResult {
   return { content: [{ type: 'text', text: JSON.stringify(data, null, 2) }], structuredContent: data };
 }

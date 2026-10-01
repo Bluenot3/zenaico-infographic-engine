@@ -38,7 +38,7 @@ codex plugin marketplace add /absolute/path/to/zenaico-infographic-engine
 codex plugin add zenaico@zenaico
 ```
 
-`npm run pack:plugin` creates `release/zenaico-plugin-1.0.1.zip`. Its standalone
+`npm run pack:plugin` creates `release/zenaico-plugin-1.0.2.zip`. Its standalone
 server includes runtime dependencies, so recipients need Node.js but do not need
 an npm installation step. Configure `GEMINI_API_KEY` and/or `OPENAI_API_KEY` in the
 environment launching Codex, or point `ZENAICO_ENV_FILE` at a private file based on

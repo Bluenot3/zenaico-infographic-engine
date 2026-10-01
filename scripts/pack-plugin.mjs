@@ -18,7 +18,8 @@ async function collect(folder, prefix) {
 }
 await collect(resolve(root, 'plugins/zenaico'), 'zenaico-plugin/plugins/zenaico');
 files['zenaico-plugin/.agents/plugins/marketplace.json'] = new Uint8Array(await readFile(resolve(root, '.agents/plugins/marketplace.json')));
-files['zenaico-plugin/README.md'] = new Uint8Array(await readFile(resolve(root, 'plugins/zenaico/README.md')));
+const installationGuide = await readFile(resolve(root, 'plugins/zenaico/README.md'), 'utf8');
+files['zenaico-plugin/README.md'] = strToU8(installationGuide.replace('src="assets/', 'src="plugins/zenaico/assets/'));
 files['zenaico-plugin/VERSION'] = strToU8(`${manifest.version}\n`);
 await mkdir(resolve(root, 'release'), { recursive: true });
 const path = resolve(root, `release/zenaico-plugin-${manifest.version}.zip`);
