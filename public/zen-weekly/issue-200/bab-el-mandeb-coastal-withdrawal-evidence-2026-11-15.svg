@@ -1,0 +1,73 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1920 1080" role="img" aria-labelledby="t d">
+<title id="t">ZEN WEEKLY Issue 200 — Bab el-Mandeb November 15 coastal redeployment evidence dossier</title>
+<desc id="d">Evidence-grounded visual timeline: Houthi advances in September 2026; government counteroffensive in October 2026; southern forces announce withdrawal from Dhubab airport and the Bab el-Mandeb area on November 15. Distinguishes reported territorial control from unverified commercial shipping closure or attacks. Sources Reuters September 10 and November 15, 2026.</desc>
+<defs>
+<linearGradient id="bg" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#050C1A"/><stop offset=".5" stop-color="#091B31"/><stop offset="1" stop-color="#050F21"/></linearGradient>
+<linearGradient id="cyan" x1="0" y1="0" x2="1" y2="0"><stop stop-color="#4AE6EA"/><stop offset=".53" stop-color="#75FAE0"/><stop offset="1" stop-color="#6EB7FF"/></linearGradient>
+<linearGradient id="gold" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#FFF1A7"/><stop offset="1" stop-color="#F9A94C"/></linearGradient>
+<linearGradient id="panel" x1="0" y1="0" x2="0" y2="1"><stop stop-color="#16334B" stop-opacity=".83"/><stop offset="1" stop-color="#0A1C33" stop-opacity=".85"/></linearGradient>
+<filter id="glow"><feGaussianBlur stdDeviation="19"/></filter>
+<pattern id="grid" width="48" height="48" patternUnits="userSpaceOnUse"><path d="M48 0 H0 V48" fill="none" stroke="#83AFD1" stroke-opacity=".07" stroke-width="1"/></pattern>
+<clipPath id="clip"><rect width="1920" height="1080"/></clipPath>
+</defs>
+<g clip-path="url(#clip)">
+<rect width="1920" height="1080" fill="url(#bg)"/>
+<rect width="1920" height="1080" fill="url(#grid)"/>
+<circle cx="1660" cy="150" r="420" fill="#13D5E2" fill-opacity=".12" filter="url(#glow)"/>
+<circle cx="350" cy="1020" r="340" fill="#418BF6" fill-opacity=".09" filter="url(#glow)"/>
+<g fill="none" stroke="#8EDAF4" stroke-opacity=".075">
+<circle cx="1700" cy="200" r="200"/><circle cx="1700" cy="200" r="227"/><circle cx="1700" cy="200" r="254"/><circle cx="1700" cy="200" r="281"/>
+<path d="M-80,970 C300,850 540,1060 950,880 S1650,800 2060,990" stroke-width="2"/><path d="M-80,990 C300,870 540,1080 950,900 S1650,820 2060,1010" stroke-width="2"/>
+</g>
+<path d="M68 76 H1852" stroke="#6EF2DD" stroke-opacity=".4"/><path d="M68 1009 H1852" stroke="#6EF2DD" stroke-opacity=".35"/>
+<text x="72" y="57" fill="#7CF7DA" font-family="Arial,Helvetica,sans-serif" font-size="23" font-weight="800" letter-spacing="7">ZEN AI CO.   /   ZEN WEEKLY</text>
+<text x="1850" y="57" text-anchor="end" fill="#D5E9F3" font-family="Arial,Helvetica,sans-serif" font-size="21" font-weight="700" letter-spacing="3">ISSUE 200   •   UPDATE 015</text>
+<text x="72" y="146" fill="#FFFFFF" font-family="Arial,Helvetica,sans-serif" font-size="64" font-weight="800" letter-spacing="-1.8">BAB EL-MANDEB</text>
+<text x="72" y="216" fill="url(#cyan)" font-family="Arial,Helvetica,sans-serif" font-size="62" font-weight="800" letter-spacing="-1.8">A COASTAL WITHDRAWAL</text>
+<text x="74" y="263" fill="#B0CADA" font-family="Arial,Helvetica,sans-serif" font-size="25">NOV 15, 2026   |   STRATEGIC MARITIME CORRIDOR   |   SOURCE-DRIVEN EVENT CHRONOLOGY</text>
+<rect x="72" y="304" width="1776" height="275" rx="27" fill="url(#panel)" stroke="#80E7EE" stroke-opacity=".28"/>
+<text x="113" y="357" fill="#8DEEDC" font-family="Arial,Helvetica,sans-serif" font-size="22" font-weight="800" letter-spacing="3">HOW THE POSITION CHANGED</text>
+<path d="M173 425 H1742" stroke="#6BDFF5" stroke-opacity=".45" stroke-width="3" stroke-dasharray="10 10"/>
+<g font-family="Arial,Helvetica,sans-serif">
+<circle cx="205" cy="425" r="12" fill="#72DEF8"/><circle cx="934" cy="425" r="12" fill="#F8C478"/><circle cx="1703" cy="425" r="15" fill="#85F6D8"/>
+<text x="117" y="390" fill="#8DCBF4" font-size="25" font-weight="800">SEPTEMBER 2026</text>
+<text x="786" y="390" fill="#F6D99B" font-size="25" font-weight="800">OCTOBER 2026</text>
+<text x="1538" y="390" fill="#9FF5DA" font-size="25" font-weight="800">NOV 15, 2026</text>
+<text x="117" y="476" fill="#FFFFFF" font-size="27" font-weight="700">Houthi coastal advance</text>
+<text x="117" y="513" fill="#B4CCDC" font-size="21">Dhubab / nearby islands reported</text>
+<text x="117" y="545" fill="#B4CCDC" font-size="21">in contested September campaign</text>
+<text x="786" y="476" fill="#FFFFFF" font-size="27" font-weight="700">Government counteroffensive</text>
+<text x="786" y="513" fill="#B4CCDC" font-size="21">Saudi-backed forces launched</text>
+<text x="786" y="545" fill="#B4CCDC" font-size="21">coastal recapture operations</text>
+<text x="1460" y="476" fill="#FFFFFF" font-size="27" font-weight="700">Withdrawal announced</text>
+<text x="1460" y="513" fill="#B4CCDC" font-size="21">Dhubab Airport + strait area</text>
+<text x="1460" y="545" fill="#B4CCDC" font-size="21">redeployment toward Aden</text>
+</g>
+<g font-family="Arial,Helvetica,sans-serif">
+<rect x="72" y="608" width="560" height="292" rx="23" fill="#0E2B3B" stroke="#70DDE0" stroke-opacity=".6"/>
+<rect x="667" y="608" width="560" height="292" rx="23" fill="#25282D" stroke="#E6BB70" stroke-opacity=".7"/>
+<rect x="1262" y="608" width="586" height="292" rx="23" fill="#222536" stroke="#C2A9F7" stroke-opacity=".65"/>
+<circle cx="113" cy="655" r="9" fill="#71EAC7"/><text x="138" y="664" fill="#8EFADE" font-size="24" font-weight="800" letter-spacing="2">DOCUMENTED</text>
+<text x="110" y="715" fill="#FFFFFF" font-size="28" font-weight="750">Southern forces' statement</text>
+<text x="110" y="755" fill="#CCE2E8" font-size="23">Redeployment from Dhubab</text>
+<text x="110" y="789" fill="#CCE2E8" font-size="23">Airport and Bab el-Mandeb</text>
+<text x="110" y="823" fill="#CCE2E8" font-size="23">area toward Aden</text>
+<text x="110" y="869" fill="#86BDCE" font-size="19">Reuters first report: 08:34 UTC / 03:34 EST</text>
+<circle cx="707" cy="655" r="9" fill="#F4C57B"/><text x="732" y="664" fill="#F8D5A0" font-size="24" font-weight="800" letter-spacing="2">REPORTED POSITION</text>
+<text x="703" y="715" fill="#FFFFFF" font-size="28" font-weight="750">Houthi territorial leverage</text>
+<text x="703" y="755" fill="#DDE1E9" font-size="23">Reuters reports Houthi control</text>
+<text x="703" y="789" fill="#DDE1E9" font-size="23">of land overlooking the strait;</text>
+<text x="703" y="823" fill="#DDE1E9" font-size="23">extent requires continued checking</text>
+<text x="703" y="869" fill="#C7A67A" font-size="19">Not an independently surveyed position map</text>
+<circle cx="1301" cy="655" r="9" fill="#C2AFFC"/><text x="1327" y="664" fill="#D1BBFF" font-size="24" font-weight="800" letter-spacing="2">NOT ESTABLISHED</text>
+<text x="1299" y="715" fill="#FFFFFF" font-size="28" font-weight="750">No confirmed new closure</text>
+<text x="1299" y="755" fill="#E0DAE9" font-size="23">No verified strait-wide shutdown,</text>
+<text x="1299" y="789" fill="#E0DAE9" font-size="23">new attack, tanker loss or</text>
+<text x="1299" y="823" fill="#E0DAE9" font-size="23">measured traffic change</text>
+<text x="1299" y="869" fill="#C0AAD5" font-size="19">Territorial control ≠ closure of navigation</text>
+</g>
+<path d="M72 947 H1848" stroke="#6AA4B5" stroke-opacity=".42"/>
+<text x="72" y="977" fill="#B3CCDA" font-family="Arial,Helvetica,sans-serif" font-size="20">SOURCE RECORD: Reuters, 15 Nov 2026 (08:34 UTC) • Reuters, 10 Sep 2026 • The National, 15 Nov 2026</text>
+<text x="72" y="1046" fill="#71EFDC" font-family="Arial,Helvetica,sans-serif" font-size="21" font-weight="800" letter-spacing="2">EVIDENCE OVER SPECULATION</text>
+<text x="1847" y="1046" text-anchor="end" fill="#A1BBD2" font-family="Arial,Helvetica,sans-serif" font-size="19">EDITORIAL GRAPHIC  •  NOT A MILITARY-SURVEY MAP</text>
+</g></svg>
