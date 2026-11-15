@@ -1,0 +1,72 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1920 1080" width="1920" height="1080" role="img" aria-label="ZEN Weekly evidence graphic: October 2026 French cold-chain sabotage, U.S. November 5 five-agency warning, and November 9 France attribution. No proven connection with U.S. military commissary outages or FAA disruption.">
+<defs>
+<linearGradient id="bg" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#020915"/><stop offset=".45" stop-color="#09243a"/><stop offset=".8" stop-color="#080d22"/><stop offset="1" stop-color="#030c1a"/></linearGradient>
+<linearGradient id="glass" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#123c52" stop-opacity=".90"/><stop offset=".58" stop-color="#06182a" stop-opacity=".90"/><stop offset="1" stop-color="#111a36" stop-opacity=".84"/></linearGradient>
+<linearGradient id="accent" x1="0" x2="1"><stop stop-color="#ffb476"/><stop offset=".5" stop-color="#6ce3ec"/><stop offset="1" stop-color="#bba7ff"/></linearGradient>
+<radialGradient id="halo"><stop stop-color="#2cdaf0" stop-opacity=".25"/><stop offset="1" stop-color="#2cdaf0" stop-opacity="0"/></radialGradient>
+<pattern id="mesh" width="52" height="52" patternUnits="userSpaceOnUse"><path d="M52 0H0V52" stroke="#327185" stroke-width="1" opacity=".28" fill="none"/></pattern>
+<filter id="blur"><feGaussianBlur stdDeviation="29"/></filter>
+<filter id="glow"><feGaussianBlur stdDeviation="5" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
+</defs>
+<rect width="1920" height="1080" fill="url(#bg)"/><rect width="1920" height="1080" fill="url(#mesh)" opacity=".33"/>
+<ellipse cx="1150" cy="260" rx="790" ry="280" fill="url(#halo)"/><ellipse cx="310" cy="820" rx="440" ry="420" fill="#d97c4e" opacity=".09" filter="url(#blur)"/>
+<circle cx="110" cy="94" r="7" fill="none" stroke="#56d7e7" opacity=".07" stroke-width="1"/><circle cx="204" cy="105" r="12" fill="none" stroke="#56d7e7" opacity=".07" stroke-width="1"/><circle cx="298" cy="116" r="17" fill="none" stroke="#56d7e7" opacity=".07" stroke-width="1"/><circle cx="392" cy="127" r="7" fill="none" stroke="#56d7e7" opacity=".07" stroke-width="1"/><circle cx="486" cy="94" r="12" fill="none" stroke="#56d7e7" opacity=".07" stroke-width="1"/><circle cx="580" cy="105" r="17" fill="none" stroke="#56d7e7" opacity=".07" stroke-width="1"/><circle cx="674" cy="116" r="7" fill="none" stroke="#56d7e7" opacity=".07" stroke-width="1"/><circle cx="768" cy="127" r="12" fill="none" stroke="#56d7e7" opacity=".07" stroke-width="1"/><circle cx="862" cy="94" r="17" fill="none" stroke="#56d7e7" opacity=".07" stroke-width="1"/><circle cx="956" cy="105" r="7" fill="none" stroke="#56d7e7" opacity=".07" stroke-width="1"/><circle cx="1050" cy="116" r="12" fill="none" stroke="#56d7e7" opacity=".07" stroke-width="1"/><circle cx="1144" cy="127" r="17" fill="none" stroke="#56d7e7" opacity=".07" stroke-width="1"/><circle cx="1238" cy="94" r="7" fill="none" stroke="#56d7e7" opacity=".07" stroke-width="1"/><circle cx="1332" cy="105" r="12" fill="none" stroke="#56d7e7" opacity=".07" stroke-width="1"/><circle cx="1426" cy="116" r="17" fill="none" stroke="#56d7e7" opacity=".07" stroke-width="1"/><circle cx="1520" cy="127" r="7" fill="none" stroke="#56d7e7" opacity=".07" stroke-width="1"/><circle cx="1614" cy="94" r="12" fill="none" stroke="#56d7e7" opacity=".07" stroke-width="1"/><circle cx="1708" cy="105" r="17" fill="none" stroke="#56d7e7" opacity=".07" stroke-width="1"/><circle cx="1802" cy="116" r="7" fill="none" stroke="#56d7e7" opacity=".07" stroke-width="1"/><circle cx="1896" cy="127" r="12" fill="none" stroke="#56d7e7" opacity=".07" stroke-width="1"/><path d="M70 400 L140 400 L180 378 H370" stroke="#5dd5e6" opacity=".10" stroke-width="1.4" fill="none"/><path d="M70 445 L158 445 L196 423 H411" stroke="#5dd5e6" opacity=".10" stroke-width="1.4" fill="none"/><path d="M70 490 L176 490 L212 468 H452" stroke="#5dd5e6" opacity=".10" stroke-width="1.4" fill="none"/><path d="M70 535 L194 535 L228 513 H493" stroke="#5dd5e6" opacity=".10" stroke-width="1.4" fill="none"/><path d="M70 580 L212 580 L244 558 H534" stroke="#5dd5e6" opacity=".10" stroke-width="1.4" fill="none"/><path d="M70 625 L230 625 L260 603 H575" stroke="#5dd5e6" opacity=".10" stroke-width="1.4" fill="none"/><path d="M70 670 L248 670 L276 648 H616" stroke="#5dd5e6" opacity=".10" stroke-width="1.4" fill="none"/><path d="M70 715 L266 715 L292 693 H657" stroke="#5dd5e6" opacity=".10" stroke-width="1.4" fill="none"/><path d="M70 760 L284 760 L308 738 H698" stroke="#5dd5e6" opacity=".10" stroke-width="1.4" fill="none"/><path d="M70 805 L302 805 L324 783 H739" stroke="#5dd5e6" opacity=".10" stroke-width="1.4" fill="none"/><path d="M70 850 L320 850 L340 828 H780" stroke="#5dd5e6" opacity=".10" stroke-width="1.4" fill="none"/>
+<path d="M0 16 H1920" stroke="url(#accent)" stroke-width="5"/><path d="M0 1080 H1920" stroke="url(#accent)" stroke-width="5"/>
+<text x="75" y="82" font-size="49" font-weight="800" fill="#fff" letter-spacing="7" font-family="Arial,sans-serif">ZEN WEEKLY</text>
+<text x="605" y="80" font-size="26" fill="#67e4e7" font-weight="600" letter-spacing="5" font-family="Arial,sans-serif">ISSUE #200  /  EVIDENCE DOSSIER</text>
+<text x="1850" y="80" text-anchor="end" font-size="22" fill="#afbed5" letter-spacing="3" font-family="Arial,sans-serif">UPDATE 014  •  15 NOV 2026</text>
+<path d="M75 105 H1845" stroke="url(#accent)" stroke-width="2" opacity=".70"/>
+<text x="75" y="187" font-size="70" fill="#ffffff" font-weight="800" letter-spacing="1" font-family="Arial,sans-serif">THE COLD-CHAIN ATTACK SURFACE</text>
+<text x="78" y="232" font-size="29" fill="#b4d3e0" font-family="Arial,sans-serif">France's documented physical-impact sabotage   /   U.S. industrial refrigeration warning   /   attribution boundaries</text>
+<g transform="translate(75 271)">
+<rect width="1770" height="72" rx="16" fill="#041426" stroke="#4b8da1" stroke-width="1.5"/>
+<text x="33" y="43" fill="#ffd3aa" font-size="22" font-weight="800" letter-spacing="1" font-family="Arial,sans-serif">EVIDENCE CLASS</text>
+<circle cx="250" cy="36" r="9" fill="#70e5ee"/><text x="271" y="43" fill="#d6eaf4" font-size="22" font-family="Arial,sans-serif">Primary agency documents</text>
+<circle cx="678" cy="36" r="9" fill="#c2a8ff"/><text x="701" y="43" fill="#d6eaf4" font-size="22" font-family="Arial,sans-serif">Government attribution</text>
+<circle cx="1073" cy="36" r="9" fill="#ffb570"/><text x="1096" y="43" fill="#d6eaf4" font-size="22" font-family="Arial,sans-serif">Affected infrastructure</text>
+</g><g transform="translate(74 385)">
+<rect width="557" height="340" rx="22" fill="url(#glass)" stroke="#ffb570" stroke-opacity=".67" stroke-width="2"/>
+<rect x="0" y="0" width="557" height="7" rx="3" fill="#ffb570" opacity=".9"/>
+<text x="29" y="57" font-family="Arial,sans-serif" font-size="26" fill="#ffb570" letter-spacing="1.6" font-weight="800">11–12 OCT 2026</text>
+<text x="29" y="112" font-family="Arial,sans-serif" font-size="28" fill="#ffffff" font-weight="800">FRENCH RETAIL CONTROLLERS</text>
+<path d="M29 133 H528" stroke="#ffb570" opacity=".32" stroke-width="2"/>
+<text x="29" y="183" font-family="Arial,sans-serif" font-size="24" fill="#e0eef6">~700 commercial sites compromised</text>
+<text x="29" y="224" font-family="Arial,sans-serif" font-size="24" fill="#e0eef6">Defrost settings forced to high heat</text>
+<text x="29" y="265" font-family="Arial,sans-serif" font-size="24" fill="#e0eef6">≥15 fire starts; substantial food loss</text>
+<rect x="26" y="290" width="505" height="31" rx="8" fill="#ffb570" fill-opacity=".10"/>
+<text x="38" y="312" font-family="Arial,sans-serif" font-size="18" fill="#ffb570" font-weight="800" letter-spacing="1.3">CONFIRMED · FR C4 REPORT</text>
+</g><g transform="translate(681 385)">
+<rect width="557" height="340" rx="22" fill="url(#glass)" stroke="#70e5ee" stroke-opacity=".67" stroke-width="2"/>
+<rect x="0" y="0" width="557" height="7" rx="3" fill="#70e5ee" opacity=".9"/>
+<text x="29" y="57" font-family="Arial,sans-serif" font-size="26" fill="#70e5ee" letter-spacing="1.6" font-weight="800">05 NOV 2026</text>
+<text x="29" y="112" font-family="Arial,sans-serif" font-size="28" fill="#ffffff" font-weight="800">FIVE-AGENCY U.S. WARNING</text>
+<path d="M29 133 H528" stroke="#70e5ee" opacity=".32" stroke-width="2"/>
+<text x="29" y="183" font-family="Arial,sans-serif" font-size="24" fill="#e0eef6">CISA · FBI · HHS · USDA · DOT</text>
+<text x="29" y="224" font-family="Arial,sans-serif" font-size="24" fill="#e0eef6">Internet-exposed cold-chain OT at risk</text>
+<text x="29" y="265" font-family="Arial,sans-serif" font-size="24" fill="#e0eef6">No group attributed in U.S. fact sheet</text>
+<rect x="26" y="290" width="505" height="31" rx="8" fill="#70e5ee" fill-opacity=".10"/>
+<text x="38" y="312" font-family="Arial,sans-serif" font-size="18" fill="#70e5ee" font-weight="800" letter-spacing="1.3">CONFIRMED · U.S. ADVISORY</text>
+</g><g transform="translate(1289 385)">
+<rect width="557" height="340" rx="22" fill="url(#glass)" stroke="#c2a8ff" stroke-opacity=".67" stroke-width="2"/>
+<rect x="0" y="0" width="557" height="7" rx="3" fill="#c2a8ff" opacity=".9"/>
+<text x="29" y="57" font-family="Arial,sans-serif" font-size="26" fill="#c2a8ff" letter-spacing="1.6" font-weight="800">09 NOV 2026</text>
+<text x="29" y="112" font-family="Arial,sans-serif" font-size="28" fill="#ffffff" font-weight="800">FRANCE ATTRIBUTES CAMPAIGN</text>
+<path d="M29 133 H528" stroke="#c2a8ff" opacity=".32" stroke-width="2"/>
+<text x="29" y="183" font-family="Arial,sans-serif" font-size="24" fill="#e0eef6">C4 names IRGC-linked Shahid Kaveh</text>
+<text x="29" y="224" font-family="Arial,sans-serif" font-size="24" fill="#e0eef6">Shared infrastructure; FOFA; Farsi traces</text>
+<text x="29" y="265" font-family="Arial,sans-serif" font-size="24" fill="#e0eef6">Government attribution, not court verdict</text>
+<rect x="26" y="290" width="505" height="31" rx="8" fill="#c2a8ff" fill-opacity=".10"/>
+<text x="38" y="312" font-family="Arial,sans-serif" font-size="18" fill="#c2a8ff" font-weight="800" letter-spacing="1.3">OFFICIAL ATTRIBUTION</text>
+</g>
+<path d="M340 754 H1590" stroke="url(#accent)" stroke-width="8" stroke-linecap="round" filter="url(#glow)"/>
+<circle cx="340" cy="754" r="14" fill="#ffb570" stroke="#fff" stroke-width="3"/><circle cx="960" cy="754" r="14" fill="#70e5ee" stroke="#fff" stroke-width="3"/><circle cx="1590" cy="754" r="14" fill="#c2a8ff" stroke="#fff" stroke-width="3"/>
+<g transform="translate(75 795)">
+<rect width="1770" height="161" rx="19" fill="#071525" stroke="#6b8da0" stroke-opacity=".7" stroke-width="2"/>
+<text x="31" y="48" fill="#ffd39e" font-size="29" font-weight="800" font-family="Arial,sans-serif">SEPARATE U.S. COMMISSARY INVESTIGATION</text>
+<text x="31" y="89" fill="#d9eaf4" font-size="25" font-family="Arial,sans-serif">At least six military commissaries reported August 2026 freezer failures. A possible cyber cause remains under investigation.</text>
+<text x="31" y="128" fill="#eab8aa" font-size="25" font-family="Arial,sans-serif">NO verified common perpetrator, shared intrusion path, or link to the Nov 13 FAA / Microsoft disruptions.</text>
+</g>
+<text x="75" y="998" fill="#98bbcc" font-size="19" font-family="Arial,sans-serif">PRIMARY SOURCES: FR C4 / CERT-FR CERTFR-2026-CTI-009 (09 NOV)  •  FR FOREIGN MINISTRY (09 NOV)  •  CISA/FBI/HHS/USDA/DOT (05 NOV)</text>
+<text x="75" y="1032" fill="#719caf" font-size="18" font-family="Arial,sans-serif">Note: ~700 sites and ≥15 fire starts are French C4 reported counts; France's attribution is an intelligence judgment, not a criminal verdict.</text>
+<text x="1845" y="1032" text-anchor="end" fill="#7ee0eb" font-size="23" font-weight="800" font-family="Arial,sans-serif">ZEN AI CO.  /  VERIFIED EVIDENCE</text>
+</svg>
